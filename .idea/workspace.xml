@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67fba2f5-9626-4ac9-b212-be6e5e2a31e9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/AtlantaFoodFinder/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/CS2340.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/CS2340.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/AtlantaFoodFinder/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/AtlantaFoodFinder/views.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CS2340/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CS2340/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/CS2340/urls.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,16 +16,16 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "sbharucha3"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;sbharucha3&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings"><![CDATA[{
   "selectedUrlAndAccountId": {
     "url": "https://github.com/palomacardozo/CS2340.git",
-    "accountId": "e147b448-2df1-4720-b0a6-91eca7590714"
+    "accountId": "4e7c7302-c2ee-480e-a9f1-173653573d37"
   }
 }]]></component>
   <component name="ProjectColorInfo">{
@@ -48,7 +43,7 @@
     "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "userAuthentication",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -87,8 +82,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-7c0b70fcd90d-JavaScript-PY-242.21829.153" />
-        <option value="bundled-python-sdk-464836ebc622-b74155a9e76b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-242.21829.153" />
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.19072.16" />
+        <option value="bundled-python-sdk-8336bb23522e-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.19072.16" />
       </set>
     </attachedChunks>
   </component>
@@ -102,6 +97,7 @@
       <updated>1726519836270</updated>
       <workItem from="1726519840651" duration="8000" />
       <workItem from="1726617103075" duration="1001000" />
+      <workItem from="1726675478854" duration="1045000" />
     </task>
     <servers />
   </component>
