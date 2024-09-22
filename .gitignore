@@ -7,12 +7,6 @@
 # Ignore build directories
 /build/
 
-__pycache__/
+**__pycache__/
 *.pyc
 
-AtlantaFoodFinder/__pycache__/admin.cpython-312.pyc
-AtlantaFoodFinder/__pycache__/models.cpython-312.pyc
-AtlantaFoodFinder/__pycache__/urls.cpython-312.pyc
-AtlantaFoodFinder/__pycache__/views.cpython-312.pyc
-CS2340/__pycache__/settings.cpython-312.pyc
-CS2340/__pycache__/urls.cpython-312.pyc
