@@ -1,0 +1,8 @@
+# Ignore user-specific IDE settings
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore build directories
+/build/
