@@ -1,0 +1,12 @@
+# Ignore user-specific IDE settings
+.idea/
+
+# Ignore log files
+*.log
+
+# Ignore build directories
+/build/
+
+__pycache__/
+*.pyc
+db.sqlite3
