@@ -7,5 +7,5 @@
 # Ignore build directories
 /build/
 
-__pycache__/
+*/__pycache__/
 *.pyc
