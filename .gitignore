@@ -1,12 +1,12 @@
 # Ignore user-specific IDE settings
 # Ignore user-specific IDE settings
-.idea\
+.idea/
 
 # Ignore log files
 *.log
 
 # Ignore build directories
-\build\
+/build/
 
-**__pycache__\
+**__pycache__/
 *.pyc
