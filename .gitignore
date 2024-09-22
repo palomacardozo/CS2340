@@ -1,5 +1,6 @@
 # Ignore user-specific IDE settings
 .idea/
+.idea/workspace.xml
 
 # Ignore log files
 *.log

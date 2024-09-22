@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import SignupForm
 from AtlantaFoodFinder.views import index
+
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -24,7 +26,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect(index)  # Redirect to a home page after successful login
+                return render(request, "CS2340/maps.html")  # Redirect to a home page after successful login
     else:
         form = AuthenticationForm()
 
