@@ -10,6 +10,7 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+<<<<<<< HEAD
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
@@ -17,6 +18,12 @@
         <option value="Python Script" />
       </list>
     </option>
+=======
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" module-name="CS2340" is-module-sdk="true">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+    <option name="myUseModuleSdk" value="true" />
+    <option name="myModuleName" value="CS2340" />
+>>>>>>> main
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -30,7 +37,11 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/palomacardozo/CS2340.git&quot;,
+<<<<<<< HEAD
     &quot;accountId&quot;: &quot;4e7c7302-c2ee-480e-a9f1-173653573d37&quot;
+=======
+    &quot;accountId&quot;: &quot;e147b448-2df1-4720-b0a6-91eca7590714&quot;
+>>>>>>> main
   }
 }</component>
   <component name="ProjectColorInfo">{
@@ -55,14 +66,30 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.Console Font",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "sqlite"
+    ]
   }
 }]]></component>
+<<<<<<< HEAD
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\emmyr\OneDrive\CS 2340\CS2340\users\templates" />
       <recent name="C:\Users\emmyr\OneDrive\CS 2340\CS2340\CS2340\templates\CS2340" />
     </key>
+=======
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="CS2340" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="CS2340" />
+      </console-settings>
+    </option>
+>>>>>>> main
   </component>
   <component name="RunManager">
     <configuration name="CS2340" type="Python.DjangoServer" factoryName="Django server">
@@ -109,8 +136,14 @@
       <updated>1726519836270</updated>
       <workItem from="1726519840651" duration="8000" />
       <workItem from="1726617103075" duration="1001000" />
+<<<<<<< HEAD
       <workItem from="1726675478854" duration="1045000" />
       <workItem from="1727017481040" duration="4943000" />
+=======
+      <workItem from="1726619027290" duration="10447000" />
+      <workItem from="1726694249878" duration="114000" />
+      <workItem from="1727033103348" duration="2047000" />
+>>>>>>> main
     </task>
     <servers />
   </component>
