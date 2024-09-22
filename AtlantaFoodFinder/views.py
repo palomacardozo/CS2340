@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.generic import ListView
 import googlemaps
@@ -11,9 +11,11 @@ from .models import *
 def index(request):
     return HttpResponse("Hello, world. You're at the AtlantaFoodFinder index.")
 
-class HomeView(ListView):
-    template_name = 'home.html'
-    context_object_name = 'mydata'
-    model = Locations
-    #form_class = EmailForm
-    success_url = "/"
+class SignUpView():
+    template_name = "users/signup.html"
+
+#def maps(request):
+ #   return redirect("CS2340/templates/maps.html")
+
+class MapsView():
+    template_name = "CS2340/maps.html"
