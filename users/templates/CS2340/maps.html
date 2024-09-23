@@ -12,11 +12,46 @@
 
     <script>
         function initMap() {
-            // Initialize the map
+            // Default center point (used in case geolocation fails)
+            var defaultLocation = {lat: -34.397, lng: 150.644};
+
+            // Initialize the map with the default location
             var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: -34.397, lng: 150.644},  // Initial center point
+                center: defaultLocation,
                 zoom: 8
             });
+
+            // Try to get user's location and center the map on it
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Center the map on the user's location
+                    map.setCenter(userLocation);
+                    map.setZoom(15); // Zoom closer to see nearby places
+
+                    // Optionally, add a marker at the user's location
+                    new google.maps.Marker({
+                        map: map,
+                        position: userLocation,
+                        title: "Your location"
+                    });
+
+                    // Search for nearby restaurants around the user's location
+                    searchNearbyRestaurants(map);
+                }, function() {
+                    // If user denies location, keep default location and search there
+                    console.log("Geolocation permission denied or unavailable.");
+                    searchNearbyRestaurants(map);
+                });
+            } else {
+                // If browser doesn't support geolocation, use the default location
+                console.log("Geolocation is not supported by this browser.");
+                searchNearbyRestaurants(map);
+            }
 
             // Create the search box and link it to the UI element
             var input = document.getElementById('search-box');
@@ -29,8 +64,7 @@
 
             var markers = [];
 
-            // Listen for the event fired when the user selects a prediction and retrieve
-            // more details for that place
+            // Listen for the event fired when the user selects a prediction
             searchBox.addListener('places_changed', function() {
                 var places = searchBox.getPlaces();
 
@@ -74,9 +108,6 @@
                 });
                 map.fitBounds(bounds);
             });
-
-            // Search nearby restaurants automatically
-            searchNearbyRestaurants(map);
         }
 
         function searchNearbyRestaurants(map) {
