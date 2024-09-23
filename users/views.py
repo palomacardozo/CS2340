@@ -4,7 +4,6 @@ from django.contrib.auth import login, authenticate
 from .forms import SignupForm
 from AtlantaFoodFinder.views import index
 
-
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -31,3 +30,6 @@ def login_view(request):
         form = AuthenticationForm()
 
     return render(request, 'users/login.html', {'form': form})
+
+def base(request):
+    return render(request, 'users/base.html', {})
