@@ -5,137 +5,154 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Maps Restaurant Search</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+        #place-details {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <input id="search-box" type="text" placeholder="Search for restaurants">
-    <div id="map" style="height: 400px; width: 100%;"></div>
+    <div id="map"></div>
+    <div id="place-details"></div>
 
     <script>
-        function initMap() {
-            // Default center point (used in case geolocation fails)
-            var defaultLocation = {lat: -34.397, lng: 150.644};
+        var map, service, infowindow;
 
-            // Initialize the map with the default location
-            var map = new google.maps.Map(document.getElementById('map'), {
+        function initMap() {
+            var defaultLocation = {lat: -34.397, lng: 150.644};
+            map = new google.maps.Map(document.getElementById('map'), {
                 center: defaultLocation,
                 zoom: 8
             });
 
-            // Try to get user's location and center the map on it
+            infowindow = new google.maps.InfoWindow();
+
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     var userLocation = {
                         lat: position.coords.latitude,
                         lng: position.coords.longitude
                     };
-
-                    // Center the map on the user's location
                     map.setCenter(userLocation);
-                    map.setZoom(15); // Zoom closer to see nearby places
-
-                    // Optionally, add a marker at the user's location
+                    map.setZoom(15);
                     new google.maps.Marker({
                         map: map,
                         position: userLocation,
                         title: "Your location"
                     });
-
-                    // Search for nearby restaurants around the user's location
-                    searchNearbyRestaurants(map);
+                    searchNearbyRestaurants(userLocation);
                 }, function() {
-                    // If user denies location, keep default location and search there
-                    console.log("Geolocation permission denied or unavailable.");
-                    searchNearbyRestaurants(map);
+                    console.error("Geolocation permission denied or unavailable.");
+                    searchNearbyRestaurants(defaultLocation);
                 });
             } else {
-                // If browser doesn't support geolocation, use the default location
-                console.log("Geolocation is not supported by this browser.");
-                searchNearbyRestaurants(map);
+                console.error("Geolocation is not supported by this browser.");
+                searchNearbyRestaurants(defaultLocation);
             }
 
-            // Create the search box and link it to the UI element
             var input = document.getElementById('search-box');
             var searchBox = new google.maps.places.SearchBox(input);
-
-            // Bias the search box results towards the current map's viewport
             map.addListener('bounds_changed', function() {
                 searchBox.setBounds(map.getBounds());
             });
 
-            var markers = [];
-
-            // Listen for the event fired when the user selects a prediction
             searchBox.addListener('places_changed', function() {
                 var places = searchBox.getPlaces();
-
-                if (places.length == 0) {
+                if (places.length === 0) {
                     return;
                 }
-
-                // Clear out the old markers
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
                 var bounds = new google.maps.LatLngBounds();
-
                 places.forEach(function(place) {
-                    // Ensure the place type contains "restaurant"
-                    if (!place.types.includes("restaurant")) {
-                        return;
-                    }
-
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    // Create a marker for each restaurant place
-                    var marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-
-                    markers.push(marker);
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
+                    if (place.geometry) {
+                        var marker = new google.maps.Marker({
+                            map: map,
+                            title: place.name,
+                            position: place.geometry.location
+                        });
                         bounds.extend(place.geometry.location);
                     }
                 });
                 map.fitBounds(bounds);
             });
+
+            // Click event listener for the map
+            map.addListener('click', function(event) {
+                searchPlaceDetails(event.latLng);
+            });
         }
 
-        function searchNearbyRestaurants(map) {
-            var service = new google.maps.places.PlacesService(map);
-
-            // Define the request to search for restaurants nearby
+        function searchNearbyRestaurants(location) {
             var request = {
-                location: map.getCenter(),
-                radius: '500',  // Search within 500 meters
-                type: ['restaurant']  // Limit to restaurants
+                location: location,
+                radius: '500',
+                type: ['restaurant']
             };
-
-            // Use PlacesService to search for nearby restaurants
+            service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     results.forEach(function(place) {
-                        // Create a marker for each restaurant found
                         new google.maps.Marker({
                             map: map,
                             position: place.geometry.location,
                             title: place.name
                         });
                     });
+                } else {
+                    console.error('Places API request failed: ' + status);
                 }
             });
         }
 
-        // Initialize the map when the window loads
+        function searchPlaceDetails(location) {
+            var request = {
+                location: location,
+                radius: '50',  // Search within 50 meters
+                type: ['restaurant']
+            };
+
+            service.nearbySearch(request, function(results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK && results.length > 0) {
+                    var placeId = results[0].place_id; // Get the first restaurant
+                    getPlaceDetails(placeId);
+                } else {
+                    infowindow.setContent("No restaurant found at this location.");
+                    infowindow.setPosition(location);
+                    infowindow.open(map);
+                }
+            });
+        }
+
+        function getPlaceDetails(placeId) {
+            var request = {
+                placeId: placeId,
+                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity']
+            };
+
+            service.getDetails(request, function(place, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    displayPlaceDetails(place);
+                } else {
+                    console.error('Place details request failed: ' + status);
+                }
+            });
+        }
+
+        function displayPlaceDetails(place) {
+            var detailsDiv = document.getElementById('place-details');
+            detailsDiv.innerHTML = `
+                <h3>${place.name}</h3>
+                <p><strong>Rating:</strong> ${place.rating || 'N/A'}</p>
+                <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
+                <p><strong>Address:</strong> ${place.vicinity || 'N/A'}</p>
+                <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+            `;
+        }
+
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
 </body>
