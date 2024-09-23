@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
     <title>Atlanta Food Finder</title>
     <style>
         body {
-            background-color: midnightblue;
+            background-color: #1e243c;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -51,9 +52,18 @@
         .button:hover {
             background-color: lightgrey;
         }
+        img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
+        .content {
+            text-align: center; /* Center the text below the image */
+        }
     </style>
 </head>
 <body>
+    <img src="{% static 'skyline.jpg' %}" alt="" width="500" height="300">
     <h1>Atlanta Food Finder</h1>
     <h2>Explore restaurants near you</h2>
     <a href="{% url 'login' %}" class="button">Login</a>
