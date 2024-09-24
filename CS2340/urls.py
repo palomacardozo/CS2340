@@ -20,8 +20,8 @@ from users import views
 
 urlpatterns = [
     path("", include("AtlantaFoodFinder.urls")),
-    path('admin/', admin.site.urls),
-path("SignUp/", views.signup, name="signup"),
-
-path('login/', views.login_view, name='login'),
+     path('admin/', admin.site.urls),
+    path("SignUp/", views.signup, name="signup"),
+    path('base/', views.base, name='base'),
+    path('login/', views.login_view, name='login'),
 ]
