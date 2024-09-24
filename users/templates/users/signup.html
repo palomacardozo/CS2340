@@ -2,13 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <style>
+        body {
+            background-color: #f4f7fa; /* Light background for contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .signup-container {
+            background-color: #ffffff; /* Card background */
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+            width: 100%;
+            max-width: 400px; /* Max width for the card */
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            color: #333333; /* Darker text for better readability */
+            margin-bottom: 20px;
+        }
+        label {
+            display: block; /* Make labels take up full width */
+            text-align: left; /* Align text to the left */
+            color: #555555; /* Slightly lighter for contrast */
+            margin-bottom: 5px; /* Space between label and input */
+            font-weight: bold; /* Bold for emphasis */
+        }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%; /* Full width inputs */
+            padding: 12px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            margin-bottom: 15px; /* Space between inputs */
+            font-size: 1em;
+            box-sizing: border-box; /* Include padding and borders in width */
+            outline: none; /* Remove outline on focus */
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+            border-color: #5a9fff; /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(90, 159, 255, 0.5); /* Glow effect */
+        }
+        button {
+            background-color: #5a9fff; /* Primary button color */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.2s;
+            width: 100%; /* Full width button */
+            box-sizing: border-box; /* Include padding and borders in width */
+        }
+        button:hover {
+            background-color: #4a8cd4; /* Darker shade on hover */
+            transform: translateY(-2px); /* Lift effect */
+        }
+        button:active {
+            transform: translateY(0); /* Reset effect on click */
+        }
+        p {
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #777777; /* Lighter color for less emphasis */
+        }
+        a {
+            color: #5a9fff; /* Link color */
+            text-decoration: none; /* Remove underline */
+        }
+        a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+        /* New CSS to remove list styles */
+        ul {
+            list-style-type: none; /* Remove bullet points from lists */
+            padding: 0; /* Remove padding */
+            margin: 0; /* Remove margin */
+        }
+    </style>
 </head>
 <body>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign up</button>
-</form>
+    <div class="signup-container">
+        <h1>Sign Up</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="/login">Log in</a></p>
+    </div>
 </body>
 </html>
