@@ -1,13 +1,106 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <style>
+        body {
+            background-color: #1e243c; /* Subtle dark background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Helvetica, sans-serif;
+        }
+        h1 {
+            font-size: 2.2em;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .login-container {
+            background-color: #2c3355; /* Card background color */
+            padding: 40px 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+            text-align: center;
+            width: 100%;
+            max-width: 400px; /* Set max width for the form */
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Add space between form elements */
+            width: 100%; /* Ensure form takes up the full container width */
+        }
+        .form-group {
+            display: flex;
+            justify-content: space-between; /* Align items next to each other */
+            align-items: center;
+            gap: 10px; /* Space between label and input */
+        }
+        label {
+            color: #ffffff;
+            font-size: 0.9em;
+            min-width: 80px; /* Set a minimum width for labels to align consistently */
+        }
+        input[type="text"], input[type="password"] {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #b3b3b3;
+            font-size: 1em;
+            flex: 1; /* Allow input to take up remaining space */
+            box-sizing: border-box; /* Include padding and borders in the width */
+            outline: none;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #5a9fff; /* Highlight border on focus */
+            box-shadow: 0 0 8px rgba(90, 159, 255, 0.4); /* Add glow on focus */
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #5a9fff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%; /* Make button same width as the input fields */
+            box-sizing: border-box;
+        }
+        button:hover {
+            background-color: #4a8cd4;
+            transform: translateY(-2px); /* Slight lift effect on hover */
+        }
+        button:active {
+            transform: translateY(0); /* Reset lift effect on click */
+        }
+        p {
+            font-size: 0.9em;
+            color: #cccccc;
+        }
+    </style>
 </head>
 <body>
-    <h2>Login</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Login</button>
-    </form>
+    <div class="login-container">
+        <h1>LOGIN</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username">
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password">
+            </div>
+
+            <button type="submit">Login</button>
+        </form>
+        <p>Forgot your password? <a href="#" style="color: #5a9fff; text-decoration: none;">Reset it</a></p>
+    </div>
 </body>
+</html>
