@@ -23,15 +23,16 @@
             max-width: 400px; /* Max width for the card */
             text-align: center;
         }
-        h1 {
+        h1 {/*Sign up title*/
             font-size: 2em;
             color: #333333; /* Darker text for better readability */
             margin-bottom: 20px;
+            margin-top: 100px;
         }
         label {
             display: block; /* Make labels take up full width */
             text-align: left; /* Align text to the left */
-            color: #555555; /* Slightly lighter for contrast */
+            color: black; /* Slightly lighter for contrast */
             margin-bottom: 5px; /* Space between label and input */
             font-weight: bold; /* Bold for emphasis */
         }
@@ -68,7 +69,7 @@
         button:active {
             transform: translateY(0); /* Reset effect on click */
         }
-        p {
+        p {/*all text*/
             margin-top: 15px;
             font-size: 0.9em;
             color: #777777; /* Lighter color for less emphasis */
@@ -96,7 +97,7 @@
             {{ form.as_p }}
             <button type="submit">Sign Up</button>
         </form>
-        <p>Already have an account? <a href="/login">Log in</a></p>
+        <p>Already have an account? <a href="/login">Log In</a></p>
     </div>
 </body>
 </html>
