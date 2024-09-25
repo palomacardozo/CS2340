@@ -14,7 +14,6 @@ def signup(request):
         form = SignupForm()
     return render(request, 'users/signup.html', {'form': form})
 
-
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
