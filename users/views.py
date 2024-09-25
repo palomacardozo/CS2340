@@ -23,7 +23,7 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return render(request, "CS2340/maps.html")  # Redirect to a home page after successful login
+                return render(request, "users/base.html")  # Redirect to a home page after successful login
     else:
         form = AuthenticationForm()
 
