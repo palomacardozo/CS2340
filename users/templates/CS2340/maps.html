@@ -13,15 +13,32 @@
         #place-details {
             margin-top: 20px;
         }
+        #location-search {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <input id="search-box" type="text" placeholder="Search for restaurants">
+    <input id="location-search" type="text" placeholder="Enter a location">
+    <button id="location-submit">Search</button>
+
+    <label for="radius">Select search radius:</label>
+    <select id="radius">
+        <option value="500">0.5 km</option>
+        <option value="1000" selected>1 km</option>
+        <option value="5000">5 km</option>
+        <option value="10000">10 km</option>
+        <option value="20000">20 km</option>
+    </select>
+    <button id="set-radius">Set Radius</button>
+
     <div id="map"></div>
     <div id="place-details"></div>
 
     <script>
         var map, service, infowindow;
+        var searchRadius = 1000; // Default radius in meters
 
         function initMap() {
             var defaultLocation = {lat: -34.397, lng: 150.644};
@@ -32,6 +49,7 @@
 
             infowindow = new google.maps.InfoWindow();
 
+            //Initialize geolocation
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(function(position) {
                     var userLocation = {
@@ -55,6 +73,7 @@
                 searchNearbyRestaurants(defaultLocation);
             }
 
+            // Search for places using the search box
             var input = document.getElementById('search-box');
             var searchBox = new google.maps.places.SearchBox(input);
             map.addListener('bounds_changed', function() {
@@ -69,7 +88,7 @@
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
                     if (place.geometry) {
-                        var marker = new google.maps.Marker({
+                        new google.maps.Marker({
                             map: map,
                             title: place.name,
                             position: place.geometry.location
@@ -84,6 +103,29 @@
             map.addListener('click', function(event) {
                 searchPlaceDetails(event.latLng);
             });
+
+            // Event listener for location search
+            document.getElementById('location-submit').addEventListener('click', function() {
+                var location = document.getElementById('location-search').value;
+                if (location) {
+                    var geocoder = new google.maps.Geocoder();
+                    geocoder.geocode({'address': location}, function(results, status) {
+                        if (status === google.maps.GeocoderStatus.OK) {
+                            map.setCenter(results[0].geometry.location);
+                            searchNearbyRestaurants(results[0].geometry.location);
+                        } else {
+                            alert('Location not found: ' + status);
+                        }
+                    });
+                }
+            });
+
+            // Event listener for setting radius
+            document.getElementById('set-radius').addEventListener('click', function() {
+                searchRadius = parseInt(document.getElementById('radius').value);
+                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                searchNearbyRestaurants(userLocation); // Re-fetch restaurants
+            });
         }
 
         function searchNearbyRestaurants(location) {
@@ -95,6 +137,9 @@
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    // Clear previous markers if needed (optional)
+                    clearMarkers();
+
                     results.forEach(function(place) {
                         new google.maps.Marker({
                             map: map,
@@ -107,8 +152,16 @@
                 }
             });
         }
+        function clearMarkers() {
+            // Clear existing markers from the map (optional)
+            // You may want to maintain a list of markers to clear them effectively
+            // For simplicity, we'll not implement this right now
+        }
 
         function searchPlaceDetails(location) {
+            var detailsDiv = document.getElementById('place-details');
+            detailsDiv.innerHTML = '';  // Clear previous details
+
             var request = {
                 location: location,
                 radius: '50',  // Search within 50 meters
@@ -136,6 +189,9 @@
             service.getDetails(request, function(place, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     displayPlaceDetails(place);
+                    infowindow.setContent(place.name);
+                    infowindow.setPosition(place.geometry.location);
+                    infowindow.open(map);
                 } else {
                     console.error('Place details request failed: ' + status);
                 }
