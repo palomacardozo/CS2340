@@ -1,11 +1,9 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 
-
 # Create your views here.
-def index(request):
-    return HttpResponse("Hello, world. You're at the AtlantaFoodFinder index.")
-
+def HomeView(request):
+    return render(request, 'users/base.html', {})
 
 class SignUpView():
     template_name = "users/signup.html"
@@ -15,6 +13,3 @@ class SignUpView():
 
 class MapsView():
     template_name = "CS2340/maps.html"
-
-def baseview(request):
-    return render(request, 'users/base.html', {})

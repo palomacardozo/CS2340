@@ -14,7 +14,7 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: Helvetica, sans-serif;
         }
         h1 {
             font-size: 3em;
@@ -52,6 +52,11 @@
         .content {
             text-align: center;
         }
+        #map {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
     </style>
 </head>
 <body>
@@ -63,6 +68,18 @@
             <a href="{% url 'login' %}" class="button">Login</a>
             <a href="{% url 'signup' %}" class="button">Sign Up</a>
         </div>
+        <div id="map"></div>
     </div>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places" async defer></script>
+    <script>
+        var map;
+        function initMap() {
+            var mapOptions = {
+                center: { lat: 33.7490, lng: -84.3880 }, // Coordinates for Atlanta
+                zoom: 12
+            };
+            map = new google.maps.Map(document.getElementById("map"), mapOptions);
+        }
+    </script>
 </body>
 </html>

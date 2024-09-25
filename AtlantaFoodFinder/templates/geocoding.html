@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="pageholder">
+    <div class="titleholder">
+
+        <div class="title"> Geocoding template for {{location.name}} ({{label}})</div>
+
+    </div>
+
+
+    <div class="linkholder">
+            <table id="ourtable3" class="myTable m-3">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Zipcode</th>
+                        <th>City</th>
+                        <th>Country</th>
+                        <th>Lat</th>
+                        <th>Lng</th>
+                        <th>Place id</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td> {{location.id}} </td>
+                        <td> {{location.name}} </td>
+                        <td> {{location.adress}} </td>
+                        <td> {{location.zipcode}} </td>
+                        <td> {{location.city}} </td>
+                        <td> {{location.country}} </td>
+
+                        <td> {{lat}} </td>
+                        <td> {{lng}} </td>
+                        <td> {{place_id}} </td>
+
+                    </tr>
+
+                </tbody>
+
+
+            </table>
+     </div>
+
+
+
+</div>
+
+{% endblock %}
