@@ -19,9 +19,10 @@ from django.urls import include, path
 from users import views
 
 urlpatterns = [
-    path("", views.base, name='home'),
-     path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path("SignUp/", views.signup, name="signup"),
-    #path('base/', views.base, name='base'),
+    path('login/', views.login_view, name='login'),
+    path("", include("AtlantaFoodFinder.urls")),
+    path("", views.base, name='home'),
     path('login/', views.login_view, name='login'),
 ]
