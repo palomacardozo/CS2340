@@ -70,7 +70,26 @@
             display: block;
         }
         #place-details {
-            margin-top: 20px;
+            position: relative;  /* Change to absolute if needed */
+            z-index: 10;  /* Ensure it's behind the map */
+        }
+        .place-details-card {
+            background-color: white;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            color: #333;
+        }
+
+        .review {
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+
+        .review p {
+            margin: 5px 0;
         }
         #location-search {
             margin-bottom: 10px;
@@ -107,6 +126,7 @@
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+        var markers = []; // Global array to hold markers
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -189,43 +209,47 @@
                 }
             });
 
-            // Event listener for setting radius
-            document.getElementById('set-radius').addEventListener('click', function() {
-                searchRadius = parseInt(document.getElementById('radius').value);
-                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants
+        }
+
+        function clearMarkers() {
+            // Loop through the markers array and set each marker's map to null
+            markers.forEach(function(marker) {
+                marker.setMap(null); // Remove marker from the map
             });
+            markers = []; // Clear the markers array
         }
 
         function searchNearbyRestaurants(location) {
             var request = {
                 location: location,
-                radius: '500',
+                radius: searchRadius, // Use the dynamic searchRadius variable
                 type: ['restaurant']
             };
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    // Clear previous markers if needed (optional)
-                    clearMarkers();
+                    clearMarkers(); // Clear previous markers before adding new ones
 
                     results.forEach(function(place) {
-                        new google.maps.Marker({
+                        var marker = new google.maps.Marker({
                             map: map,
                             position: place.geometry.location,
                             title: place.name
                         });
+                        markers.push(marker); // Add the new marker to the markers array
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
                 }
             });
         }
-        function clearMarkers() {
-            // Clear existing markers from the map (optional)
-            // You may want to maintain a list of markers to clear them effectively
-            // For simplicity, we'll not implement this right now
-        }
+
+        // Event listener for setting radius
+        document.getElementById('set-radius').addEventListener('click', function() {
+            searchRadius = parseInt(document.getElementById('radius').value); // Update searchRadius from select
+            var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+            searchNearbyRestaurants(userLocation); // Re-fetch restaurants based on the new radius
+        });
 
         function searchPlaceDetails(location) {
             var detailsDiv = document.getElementById('place-details');
@@ -233,7 +257,7 @@
 
             var request = {
                 location: location,
-                radius: '50',  // Search within 50 meters
+                radius: searchRadius,
                 type: ['restaurant']
             };
 
@@ -252,7 +276,7 @@
         function getPlaceDetails(placeId) {
             var request = {
                 placeId: placeId,
-                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity']
+                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
             };
 
             service.getDetails(request, function(place, status) {
@@ -269,14 +293,85 @@
 
         function displayPlaceDetails(place) {
             var detailsDiv = document.getElementById('place-details');
+            detailsDiv.innerHTML = '';  // Clear previous details
+
+            const cuisineType = place.types
+                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ')
+                : 'N/A';
+
+            const maxReviewLength = 200; // Set your character limit here
+            const reviews = place.reviews ? place.reviews.map((review, index) => {
+                let reviewText = review.text;
+                let isLongReview = reviewText.length > maxReviewLength;
+                let truncatedReview = isLongReview ? reviewText.substring(0, maxReviewLength) + '...' : reviewText;
+
+                return `
+                    <div class="review">
+                        <p><strong>${review.author_name}</strong> (Rating: ${review.rating}):</p>
+                        <p class="review-text">${truncatedReview}</p>
+                        ${isLongReview ? `<a href="#" class="see-more" data-index="${index}">See more</a>` : ''}
+                    </div>
+                    <div class="full-review" id="full-review-${index}" style="display: none;">
+                        <p>"${reviewText}"</p>
+                    </div>
+                `;
+            }).join('') : '<p>No reviews available</p>';
+
+            const ratingStars = generateStars(place.rating); // Get star representation
+
             detailsDiv.innerHTML = `
-                <h3>${place.name}</h3>
-                <p><strong>Rating:</strong> ${place.rating || 'N/A'}</p>
-                <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
-                <p><strong>Address:</strong> ${place.vicinity || 'N/A'}</p>
-                <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+                <div class="place-details-card">
+                    <h3>${place.name}</h3>
+                    <p><strong>Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
+                    <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
+                    <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
+                    <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+                    <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
+                    <h4>Reviews:</h4>
+                    <div class="reviews">${reviews}</div>
+                </div>
             `;
+
+            // Add event listeners for "See more" links
+            const seeMoreLinks = detailsDiv.getElementsByClassName('see-more');
+            for (let link of seeMoreLinks) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const index = this.getAttribute('data-index');
+                    const fullReviewDiv = document.getElementById(`full-review-${index}`);
+                    const reviewTextDiv = this.previousElementSibling; // The review text element
+
+                    // Toggle the full review and update the text accordingly
+                    if (fullReviewDiv.style.display === 'none') {
+                        fullReviewDiv.style.display = 'block'; // Show full review
+                        reviewTextDiv.style.display = 'none'; // Hide truncated text
+                        this.textContent = 'See less'; // Change link text
+                    } else {
+                        fullReviewDiv.style.display = 'none'; // Hide full review
+                        reviewTextDiv.style.display = 'block'; // Show truncated text
+                        this.textContent = 'See more'; // Reset link text
+                    }
+                });
+            }
         }
+
+        // Function to generate star symbols based on the rating
+        function generateStars(rating) {
+            if (!rating) return ''; // Return empty if no rating
+            let stars = '';
+            const roundedRating = Math.round(rating); // Round to nearest whole number
+            for (let i = 0; i < 5; i++) {
+                if (i < roundedRating) {
+                    stars += '★'; // Full star
+                } else {
+                    stars += '☆'; // Empty star
+                }
+            }
+            return stars; // Return the star representation
+        }
+
+
+
 
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
@@ -386,4 +481,3 @@
     -->
 </body>
 </html>
--->
