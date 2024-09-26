@@ -69,28 +69,67 @@
             margin: 10px auto;
             display: block;
         }
-        #place-details {
-            position: relative;  /* Change to absolute if needed */
-            z-index: 10;  /* Ensure it's behind the map */
-        }
-        .place-details-card {
+        .place-details-card, .reviews-card {
             background-color: white;
             padding: 20px;
-            margin: 20px auto;
+            margin: 10px; /* Margin around the cards */
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            color: #333;
+            flex: 1; /* Ensure both cards take equal space */
+            display: flex;
+            flex-direction: column; /* Make sure content stacks vertically */
+            height: 400px;
+            font-size: 16px; /* Base font size for readability */
+        }
+
+        .place-details-card h3 {
+            font-size: 1.8em; /* Larger font size for headings */
+            margin-bottom: 10px; /* Space below headings */
+        }
+
+        .place-details-card .stars {
+            color: gold; /* Color for the stars */
+            font-size: 1.2em; /* Adjust size if necessary */
+        }
+
+
+        .reviews-card h4 {
+            font-size: 1.5em; /* Slightly smaller for subheadings */
+            margin-bottom: 10px; /* Space below subheadings */
+        }
+
+        .reviews-card {
+            overflow-y: auto; /* Enable vertical scrolling */
         }
 
         .review {
-            border-top: 1px solid #ccc;
-            padding-top: 10px;
+            margin-bottom: 15px; /* Space between reviews */
+            font-size: 14px; /* Font size for reviews */
+        }
+
+        .review strong {
+            color: #333; /* Dark color for the reviewer name */
         }
 
         .review p {
-            margin: 5px 0;
+            color: #555; /* Slightly lighter for review text */
         }
+
+        .review .stars {
+            color: gold; /* Color for the stars */
+            font-size: 1.2em; /* Adjust size if necessary */
+        }
+
+
+        .place-details-container {
+            display: flex; /* Align cards horizontally */
+            justify-content: space-between; /* Space between cards */
+            max-width: 1200px; /* Optional: limit the overall width */
+            margin: 20px auto; /* Center the container */
+            height: 400px; /* Set a fixed height for the container */
+        }
+
+
         #location-search {
             margin-bottom: 10px;
         }
@@ -302,7 +341,8 @@
 
                 return `
                     <div class="review">
-                        <p><strong>${review.author_name}</strong> (Rating: ${review.rating}):</p>
+                        <p><strong>${review.author_name}</strong></p>
+                        <p>Rating: ${generateStars(review.rating)} (${review.rating || 'N/A'} / 5 stars)</p>
                         <p class="review-text">${truncatedReview}</p>
                         ${isLongReview ? `<a href="#" class="see-more" data-index="${index}">See more</a>` : ''}
                     </div>
@@ -315,15 +355,19 @@
             const ratingStars = generateStars(place.rating); // Get star representation
 
             detailsDiv.innerHTML = `
-                <div class="place-details-card">
-                    <h3>${place.name}</h3>
-                    <p><strong>Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
-                    <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
-                    <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
-                    <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
-                    <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
-                    <h4>Reviews:</h4>
-                    <div class="reviews">${reviews}</div>
+                <div class="place-details-container">
+                    <div class="place-details-card">
+                        <h3>${place.name}</h3>
+                        <p><strong>Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
+                        <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
+                        <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
+                        <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+                        <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
+                    </div>
+                    <div class="reviews-card">
+                        <h4>Reviews:</h4>
+                        <div class="reviews">${reviews}</div>
+                    </div>
                 </div>
             `;
 
@@ -350,21 +394,20 @@
             }
         }
 
+
         // Function to generate star symbols based on the rating
         function generateStars(rating) {
             if (!rating) return ''; // Return empty if no rating
             let stars = '';
-            const roundedRating = Math.round(rating); // Round to nearest whole number
             for (let i = 0; i < 5; i++) {
-                if (i < roundedRating) {
+                if (i < rating) {
                     stars += '★'; // Full star
                 } else {
                     stars += '☆'; // Empty star
                 }
             }
-            return stars; // Return the star representation
+            return `<span class="stars">${stars}</span>`; // Wrap stars in a span with class
         }
-
 
 
 
