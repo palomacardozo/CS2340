@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atlanta Food Finder</title>
+    <style>
+        body {
+            background-color: #1e243c;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Helvetica, sans-serif;
+        }
+        h1 {
+            font-size: 3em;
+            color: white;
+        }
+        h2 {
+            font-size: 1.7em;
+            color: white;
+        }
+        .buttons {
+            display: flex;
+            gap: 5px;
+            margin: 5px auto;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 20px auto;
+            background-color: white;
+            color: black;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 30px;
+        }
+        .button:hover {
+            background-color: lightgrey;
+        }
+        img {
+            width: 100%;
+            height: auto;
+            max-width: 100%;
+        }
+        .content {
+            text-align: center;
+        }
+        #map {
+            width: 80%; /* Adjust width as needed */
+            height: 500px; /* Set a fixed height to display the map */
+            margin: 0 auto;
+            border: 2px solid #fff; /* Optional: adds a border around the map */
+        }
+        #search-box {
+            padding: 10px;
+            width: 80%;
+            max-width: 500px;
+            margin: 10px auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <img src="{% static 'skyline.jpg' %}" alt="Skyline" width="500" height="300">
+    <div class="main content">
+        <h1>Atlanta Food Finder</h1>
+        <h2>Explore restaurants near you</h2>
+        <div class="buttons">
+            <a href="{% url 'login' %}" class="button">Login</a>
+            <a href="{% url 'signup' %}" class="button">Sign Up</a>
+        </div>
+        <input id="search-box" type="text" placeholder="Search for restaurants">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
+    <script>
+        function initMap() {
+            // Initialize the map
+            var map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 33.7490, lng: -84.3880},  // Center at Atlanta
+                zoom: 12
+            });
+
+            // Create the search box and link it to the UI element
+            var input = document.getElementById('search-box');
+            var searchBox = new google.maps.places.SearchBox(input);
+
+            // Bias the search box results towards the current map's viewport
+            map.addListener('bounds_changed', function() {
+                searchBox.setBounds(map.getBounds());
+            });
+
+            var markers = [];
+
+            // Listen for the event fired when the user selects a prediction and retrieve
+            // more details for that place
+            searchBox.addListener('places_changed', function() {
+                var places = searchBox.getPlaces();
+
+                if (places.length == 0) {
+                    return;
+                }
+
+                // Clear out the old markers
+                markers.forEach(function(marker) {
+                    marker.setMap(null);
+                });
+                markers = [];
+
+                var bounds = new google.maps.LatLngBounds();
+
+                places.forEach(function(place) {
+                    // Ensure the place type contains "restaurant"
+                    if (!place.types.includes("restaurant")) {
+                        return;
+                    }
+
+                    if (!place.geometry || !place.geometry.location) {
+                        console.log("Returned place contains no geometry");
+                        return;
+                    }
+
+                    // Create a marker for each restaurant place
+                    var marker = new google.maps.Marker({
+                        map: map,
+                        title: place.name,
+                        position: place.geometry.location
+                    });
+
+                    markers.push(marker);
+
+                    if (place.geometry.viewport) {
+                        bounds.union(place.geometry.viewport);
+                    } else {
+                        bounds.extend(place.geometry.location);
+                    }
+                });
+                map.fitBounds(bounds);
+            });
+
+            // Search nearby restaurants automatically
+            searchNearbyRestaurants(map);
+        }
+
+        function searchNearbyRestaurants(map) {
+            var service = new google.maps.places.PlacesService(map);
+
+            // Define the request to search for restaurants nearby
+            var request = {
+                location: map.getCenter(),
+                radius: '500',  // Search within 500 meters
+                type: ['restaurant']  // Limit to restaurants
+            };
+
+            // Use PlacesService to search for nearby restaurants
+            service.nearbySearch(request, function(results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    results.forEach(function(place) {
+                        // Create a marker for each restaurant found
+                        new google.maps.Marker({
+                            map: map,
+                            position: place.geometry.location,
+                            title: place.name
+                        });
+                    });
+                }
+            });
+        }
+
+        // Initialize the map when the window loads
+        google.maps.event.addDomListener(window, 'load', initMap);
+    </script>
+</body>
+</html>
