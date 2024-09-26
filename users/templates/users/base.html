@@ -126,6 +126,7 @@
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+        var markers = []; // Global array to hold markers
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -208,43 +209,47 @@
                 }
             });
 
-            // Event listener for setting radius
-            document.getElementById('set-radius').addEventListener('click', function() {
-                searchRadius = parseInt(document.getElementById('radius').value);
-                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants
+        }
+
+        function clearMarkers() {
+            // Loop through the markers array and set each marker's map to null
+            markers.forEach(function(marker) {
+                marker.setMap(null); // Remove marker from the map
             });
+            markers = []; // Clear the markers array
         }
 
         function searchNearbyRestaurants(location) {
             var request = {
                 location: location,
-                radius: '500',
+                radius: searchRadius, // Use the dynamic searchRadius variable
                 type: ['restaurant']
             };
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    // Clear previous markers if needed (optional)
-                    clearMarkers();
+                    clearMarkers(); // Clear previous markers before adding new ones
 
                     results.forEach(function(place) {
-                        new google.maps.Marker({
+                        var marker = new google.maps.Marker({
                             map: map,
                             position: place.geometry.location,
                             title: place.name
                         });
+                        markers.push(marker); // Add the new marker to the markers array
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
                 }
             });
         }
-        function clearMarkers() {
-            // Clear existing markers from the map (optional)
-            // You may want to maintain a list of markers to clear them effectively
-            // For simplicity, we'll not implement this right now
-        }
+
+        // Event listener for setting radius
+        document.getElementById('set-radius').addEventListener('click', function() {
+            searchRadius = parseInt(document.getElementById('radius').value); // Update searchRadius from select
+            var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+            searchNearbyRestaurants(userLocation); // Re-fetch restaurants based on the new radius
+        });
 
         function searchPlaceDetails(location) {
             var detailsDiv = document.getElementById('place-details');
@@ -252,7 +257,7 @@
 
             var request = {
                 location: location,
-                radius: '50',  // Search within 50 meters
+                radius: searchRadius,
                 type: ['restaurant']
             };
 
