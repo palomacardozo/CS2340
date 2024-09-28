@@ -25,4 +25,5 @@ urlpatterns = [
     path("", include("AtlantaFoodFinder.urls")),
     path("", views.base, name='home'),
     path('login/', views.login_view, name='login'),
+    path('favorites/', views.favorites, name='favorites'),
 ]
