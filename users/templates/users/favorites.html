@@ -1,0 +1,10 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+    <h1>Favorites</h1>
+    <!-- Favorites would go here! -->
+    {% if not user.is_authenticated %}
+        <p>You need to be logged in or signed up!</p>
+        <a href="{% url 'home' %}">Back to Home</a>
+    {% endif %}
+{% endblock %}
