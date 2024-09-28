@@ -156,6 +156,7 @@
         <option value="5000">5 km</option>
         <option value="10000">10 km</option>
         <option value="20000">20 km</option>
+        <option value="50000">50 km</option>
     </select>
     <button id="set-radius">Set Radius</button>
 
@@ -165,6 +166,8 @@
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+
+        google.maps.event.addDomListener(window, 'load', initMap);
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -258,14 +261,14 @@
         function searchNearbyRestaurants(location) {
             var request = {
                 location: location,
-                radius: '500',
+                radius: searchRadius,
                 type: ['restaurant']
             };
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     // Clear previous markers if needed (optional)
-                    clearMarkers();
+                    //clearMarkers();
 
                     results.forEach(function(place) {
                         new google.maps.Marker({
@@ -279,12 +282,23 @@
                 }
             });
         }
+        /*
         function clearMarkers() {
-            // Clear existing markers from the map (optional)
-            // You may want to maintain a list of markers to clear them effectively
-            // For simplicity, we'll not implement this right now
+            // Clear existing markers from the map
+            markers.forEach(function(marker) {
+                marker.setMap(null); // Remove marker from the map
+            });
+            markers = []; // Reset the markers array
         }
-
+        function addMarker(location, title) {
+            var marker = new google.maps.Marker({
+                map: map,
+                position: location,
+                title: title
+            });
+            markers.push(marker); // Add marker to the array
+        }
+        */
         function searchPlaceDetails(location) {
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
@@ -413,109 +427,5 @@
 
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
-        <!--
-        <input id="search-box" type="text" placeholder="Search for restaurants">
-        <div id="map"></div>
-    </div>
-
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
-    <script>
-        function initMap() {
-            // Initialize the map
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: 33.7490, lng: -84.3880},  // Center at Atlanta
-                zoom: 12
-            });
-
-            // Create the search box and link it to the UI element
-            var input = document.getElementById('search-box');
-            var searchBox = new google.maps.places.SearchBox(input);
-
-            // Bias the search box results towards the current map's viewport
-            map.addListener('bounds_changed', function() {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            var markers = [];
-
-            // Listen for the event fired when the user selects a prediction and retrieve
-            // more details for that place
-            searchBox.addListener('places_changed', function() {
-                var places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                    return;
-                }
-
-                // Clear out the old markers
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                var bounds = new google.maps.LatLngBounds();
-
-                places.forEach(function(place) {
-                    // Ensure the place type contains "restaurant"
-                    if (!place.types.includes("restaurant")) {
-                        return;
-                    }
-
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    // Create a marker for each restaurant place
-                    var marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-
-                    markers.push(marker);
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-
-            // Search nearby restaurants automatically
-            searchNearbyRestaurants(map);
-        }
-
-        function searchNearbyRestaurants(map) {
-            var service = new google.maps.places.PlacesService(map);
-
-            // Define the request to search for restaurants nearby
-            var request = {
-                location: map.getCenter(),
-                radius: '500',  // Search within 500 meters
-                type: ['restaurant']  // Limit to restaurants
-            };
-
-            // Use PlacesService to search for nearby restaurants
-            service.nearbySearch(request, function(results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    results.forEach(function(place) {
-                        // Create a marker for each restaurant found
-                        new google.maps.Marker({
-                            map: map,
-                            position: place.geometry.location,
-                            title: place.name
-                        });
-                    });
-                }
-            });
-        }
-
-        // Initialize the map when the window loads
-        google.maps.event.addDomListener(window, 'load', initMap);
-    </script>
-    -->
 </body>
 </html>
