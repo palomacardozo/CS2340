@@ -109,6 +109,7 @@
     </style>
 </head>
 <body>
+
 <div class="header-image">
         <div class = "navbar">
             <a href = "{% url 'home' %}">Home</a>
@@ -120,6 +121,7 @@
         <h2>Explore restaurants near you</h2>
     </div>
 
+<div class="search-area">
     <input id="search-box" type="text" placeholder="Search for restaurants">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
@@ -133,6 +135,7 @@
         <option value="20000">20 km</option>
     </select>
     <button id="set-radius">Set Radius</button>
+    </div>
 
     <div id="map"></div>
     <div id="place-details"></div>

@@ -95,8 +95,8 @@ form{
 }
 
 .titleholder{
-    display: 'flex';
-    justify-content:'space-between';
+    display: flex;
+    justify-content:space-between;
     background-color: #4267B2;
     align-items: center;
     height: 40px;
@@ -264,6 +264,17 @@ input[type="text"], select, button {
 
 .search-area {
     padding: 5px 0;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    flex-wrap: wrap;         /* Wraps on smaller screens */
+    gap: 5px;               /* Space between each element */
+    margin-top: 20px;
+    margin-right: 7%; /* Shift to right */
+}
+
+label[for="radius"] {
+    color: white; /* Make the label for search radius white */
 }
 
 button {
