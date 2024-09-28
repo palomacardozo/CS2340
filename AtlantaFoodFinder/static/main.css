@@ -27,11 +27,11 @@
     background-color: #2D323E;
     color: white;
     font-weight: bold;
-  }
+}
 
 .myTable td, .myTable th {
     border: 0.01em solid #e3e2e2;
-  }
+}
 
 .myTable tr:nth-child(even){background-color: #f9f8f8;}
 
@@ -104,9 +104,7 @@ form{
 .linkholder{
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
     flex-direction: column;
-
 }
-
 
 .title{
     color: white;
@@ -135,6 +133,121 @@ form{
     margin-top: 20px;
     margin-bottom: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+}
 
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Lato', Arvo;
+}
 
+.header-image {
+    background: url('/static/atlantaeats.jpg') no-repeat center center;
+    background-size: cover;
+    height: 75vh;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px;
+    font-size: 20px;
+}
+
+.navbar a:hover {
+    background-color: #bfb8b8;
+    color: #252423;
+}
+
+h1, h2 {
+    background-color: none;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    font-size: calc(16px + 1vw);
+}
+
+h2 {
+    font-size: calc(14px + 0.5vw); /* Smaller size, adjust as needed */
+}
+
+.content {
+    background-color: #2e2d2c;
+    color: white;
+    padding: 20px;
+    height: 20vh;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type="text"], select, button {
+    font-family: 'Lato', Arvo;
+    margin: 10px;
+    padding: 8px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: white;
+    color: #3c3b39;
+    width: auto;
+    max-width: 200px;
+    font-size: 16px;
+}
+
+.search-area {
+    padding: 5px 0;
+}
+
+button {
+    cursor: pointer;
+    background-color: #555;
+    color: white;
+    font-family: 'Lato', Arvo;
+}
+
+button:hover {
+    background-color: #777;
+}
+
+/* CHANGES ACCORDINGLY */
+@media (max-width: 600px) {
+    .navbar a {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    input[type="text"], select, button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    h1, h2 {
+        font-size: 5vw; /* Smaller text on very small screens */
+    }
 }
