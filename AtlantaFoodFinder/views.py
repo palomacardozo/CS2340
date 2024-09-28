@@ -13,3 +13,15 @@ class SignUpView():
 
 class MapsView():
     template_name = "CS2340/maps.html"
+
+class PasswordResetView():
+    template_name = "users/passwordresetform.html"
+
+class PasswordResetDoneView():
+    template_name = "users/passwordresetdone.html"
+
+class PasswordResetConfirmedView():
+    template_name = "users/passwordresetconfirmed.html"
+
+class PasswordResetCompleteView():
+    template_name = "users/passwordresetcomplete.html"

@@ -31,3 +31,15 @@ def login_view(request):
 
 def base(request):
     return render(request, 'users/base.html', {})
+
+def PasswordResetView(request):
+    return render(request, 'users/passwordresetform.html', {})
+
+def PasswordResetConfirmedView(request):
+    return render(request, 'users/passswordresetconfirmed.html', {})
+
+def PasswordResetDoneView(request):
+    return render(request, 'users/passwordresetdone.html', {})
+
+def PasswordResetCompleteView(request):
+    return render(request, 'users/passwordresetcomplete.html', {})
