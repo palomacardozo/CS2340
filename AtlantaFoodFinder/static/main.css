@@ -137,6 +137,8 @@ form{
 }
 
 /* Re-did the home page */
+
+/* The search area */
 body, html {
     margin: 0;
     padding: 0;
@@ -144,6 +146,42 @@ body, html {
     overflow-x: hidden;
     box-sizing: border-box;
     font-family: 'Lato', Arvo;
+    background: #3c3b39;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between; /* Push the restaurant details up away the bottom */
+    padding-bottom: 20px; /* Consistent padding at the bottom */
+}
+
+/* Map container/content fills all available space */
+#map {
+    flex: 1;
+    min-height: 400px; /* Min height to prevent cut off */
+}
+
+.place-details-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 20px auto;
+    min-height: 500px;
+    height: auto;
+}
+
+.place-details-card, .reviews-card {
+    background-color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: auto;
 }
 
 .header-image {
