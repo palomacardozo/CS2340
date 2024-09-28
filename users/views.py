@@ -4,7 +4,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import SignupForm
 from django.shortcuts import get_object_or_404
-from .models import Locations, Favorite
+from AtlantaFoodFinder.models import Locations
+from .models import Favorite
 import googlemaps
 from django.conf import settings
 

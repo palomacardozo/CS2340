@@ -119,12 +119,16 @@
 {% endfor %}
 
 <div class="header-image">
-        <div class = "navbar">
-            <a href = "{% url 'home' %}">Home</a>
+    <div class="navbar">
+        <a href="{% url 'home' %}">Home</a>
+        {% if not user.is_authenticated %}
             <a href="{% url 'login' %}">Login</a>
             <a href="{% url 'signup' %}">Signup</a>
+        {% else %}
             <a href="{% url 'favorites' %}">Favorites</a>
-        </div>
+            <a href="{% url 'logout' %}">Logout</a>
+        {% endif %}
+    </div>
         <h1>Atlanta Food Finder</h1>
         <h2>Explore restaurants near you</h2>
     </div>
