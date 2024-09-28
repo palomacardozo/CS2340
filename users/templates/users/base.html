@@ -55,11 +55,9 @@
             text-align: center;
         }
         #map {
-            /*width: 80%; /* Adjust width as needed
-            height: 500px; /* Set a fixed height to display the map
             margin: 0 auto;
-            border: 2px solid #fff; /* Optional: adds a border around the map */
-            height: 400px;
+            border: 2px solid #fff;
+            height: 800px;
             width: 100%;
         }
         #search-box {
@@ -323,6 +321,14 @@
             });
         }
 
+        function displayRestaurants(restaurants, map) {
+            // Iterate through the list of restaurants (places)
+            restaurants.forEach(place => {
+        // Create a marker for each restaurant
+            createMarker(place, map);
+            });
+        }
+
         function getPlaceDetails(placeId) {
             var request = {
                 placeId: placeId,
@@ -379,7 +385,7 @@
                         <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
                         <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
-                        <p><strong>Add to Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
+                        <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
                             🤍
                         </button></p>
                     </div>
@@ -428,6 +434,28 @@
             return `<span class="stars">${stars}</span>`; // Wrap stars in a span with class
         }
 
+        function createMarker(place, map) {
+    const marker = new google.maps.Marker({
+        position: place.geometry.location,
+        map: map,
+        title: place.name
+    });
+
+    // Event listener for when the marker is clicked
+    google.maps.event.addListener(marker, 'click', function () {
+        // Use the PlacesService to get more details about the restaurant
+        var service = new google.maps.places.PlacesService(map);
+
+        service.getDetails({ placeId: place.place_id }, function (result, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                // Call the displayPlaceDetails function to show the full details
+                displayPlaceDetails(result);
+            } else {
+                console.error("Error fetching place details: " + status);
+            }
+        });
+    });
+}
 
 
         google.maps.event.addDomListener(window, 'load', initMap);
