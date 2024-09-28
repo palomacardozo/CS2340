@@ -1,10 +1,47 @@
-{% extends 'users/base.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-{% block content %}
-    <h1>Favorites</h1>
-    <!-- Favorites would go here! -->
-    {% if not user.is_authenticated %}
-        <p>You need to be logged in or signed up!</p>
-        <a href="{% url 'home' %}">Back to Home</a>
-    {% endif %}
-{% endblock %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Favorites</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+</head>
+<body>
+
+<div class="header-image">
+    <div class="navbar">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Signup</a>
+        <a href="{% url 'favorites' %}">Favorites</a>
+    </div>
+    <h1>Atlanta Food Finder</h1>
+    <h2>Your Favorite Restaurants</h2>
+</div>
+
+<div class="content">
+    <div class="place-details-container">
+        {% if favorites %}
+            <ul class="favorites-list">
+                {% for favorite in favorites %}
+                    <li class="place-details-card">
+                        <h3>{{ favorite.restaurant.name }}</h3>
+                        <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p>
+                        <p><strong>Phone:</strong> {{ favorite.restaurant.phone_number }}</p>
+                        <p><a href="{{ favorite.restaurant.website }}" target="_blank">Visit Website</a></p>
+                        <button onclick="window.location.href='{% url 'restaurant_details' favorite.restaurant.id %}'" class="ourbutton">
+                            View Details
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No favorites yet. Go add some!</p>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

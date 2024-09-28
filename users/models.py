@@ -17,6 +17,12 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions',
     )
 
+class Locations(models.Model):
+    name = models.CharField(max_length=255)
+    address = models.CharField(max_length=255)
+    website = models.URLField(null=True, blank=True)
+    place_id = models.CharField(max_length=255, unique=True)
+
 class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)

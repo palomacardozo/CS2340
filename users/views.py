@@ -3,6 +3,10 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import SignupForm
+from django.shortcuts import get_object_or_404
+from .models import Locations, Favorite
+import googlemaps
+from django.conf import settings
 
 def signup(request):
     if request.method == 'POST':
@@ -30,8 +34,21 @@ def login_view(request):
 
     return render(request, 'users/login.html', {'form': form})
 
-@login_required(login_url='/login/')
-def favorites(request):
-    return render(request, 'users/favorites.html',{})
 def base(request):
     return render(request, 'users/base.html', {})
+
+def get_place_details(place_id):
+    gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
+    place_details = gmaps.place(place_id=place_id)
+    return place_details
+
+@login_required(login_url='/login/')
+def favorites(request):
+    user_favorites = Favorite.objects.filter(user=request.user)
+    return render(request, 'users/favorites.html', {'favorites': user_favorites})
+
+@login_required(login_url='/login/')
+def add_to_favorites(request, restaurant_id):
+    restaurant = get_object_or_404(Locations, id=restaurant_id)
+    Favorite.objects.create(user=request.user, restaurant=restaurant)
+    return redirect('favorites')  # Redirect to the favorites page

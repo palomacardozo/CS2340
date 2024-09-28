@@ -26,4 +26,5 @@ urlpatterns = [
     path("", views.base, name='home'),
     path('login/', views.login_view, name='login'),
     path('favorites/', views.favorites, name='favorites'),
+    path('add_to_favorites/<int:restaurant_id>/', views.add_to_favorites, name='add_to_favorites'),
 ]

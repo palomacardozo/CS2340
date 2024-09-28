@@ -304,3 +304,21 @@ button:hover {
         font-size: 5vw; /* Smaller text on very small screens */
     }
 }
+
+.favorites-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.favorites-list li {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.favorites-list h3 {
+    margin: 0;
+    font-size: 1.5em;
+}

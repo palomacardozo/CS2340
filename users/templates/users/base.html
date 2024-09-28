@@ -106,9 +106,17 @@
         .heart-button.hearted {
             color: red;  /* Red color for the heart when it's favorited */
         }
+
     </style>
+
 </head>
 <body>
+
+{% for restaurant in restaurants %}
+<button onclick="window.location.href='{% url 'add_to_favorites' restaurant.id %}'" class="heart-button">
+    🤍 Add to Favorites
+</button>
+{% endfor %}
 
 <div class="header-image">
         <div class = "navbar">
