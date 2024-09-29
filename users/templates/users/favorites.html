@@ -8,26 +8,27 @@
     <title>Your Favorites</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
-<body>
-{% if message %}
-    <p>{{ message }}</p>
-    <div>
-        <a href="{% url 'login' %}" class="ourbutton">Login</a>
-        <a href="{% url 'signup' %}" class="ourbutton">Signup</a>
+<div>
+<div class="header-image">
+    <div class="navbar">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'favorites' %}">Favorites</a>
+    {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+        <button type="submit" class="ourbutton">Logout</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'signup' %}">Signup</a>
+        {% endif %}
     </div>
-{% else %}
-    <div class="header-image">
-        <div class="navbar">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'login' %}">Login</a>
-            <a href="{% url 'signup' %}">Signup</a>
-            <a href="{% url 'favorites' %}">Favorites</a>
-        </div>
         <h1>Atlanta Food Finder</h1>
-        <h2>Your Favorite Restaurants</h2>
+        <h2>Explore restaurants near you</h2>
     </div>
 
     <div class="content">
+    {%  if user.is_authenticated %}
         <div class="place-details-container">
             {% if favorites %}
                 <ul class="favorites-list">
@@ -47,7 +48,11 @@
                 <p>No favorites yet. Go add some!</p>
             {% endif %}
         </div>
-    {% endif %}
+        {% else %}
+        <div>
+        GO TO THE LOGIN AND SIGNUP IN THE NAVIGATION BAR!
+        </div>
+     {% endif %}
 </div>
 
 </body>

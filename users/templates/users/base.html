@@ -121,8 +121,8 @@
 <div class="header-image">
     <div class="navbar">
         <a href="{% url 'home' %}">Home</a>
-    {% if user.is_authenticated %}
         <a href="{% url 'favorites' %}">Favorites</a>
+    {% if user.is_authenticated %}
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
         <button type="submit" class="ourbutton">Logout</button>
