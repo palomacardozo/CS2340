@@ -166,8 +166,12 @@
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+        var markers = [];  // Array to hold all markers
 
         google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -238,6 +242,7 @@
             document.getElementById('location-submit').addEventListener('click', function() {
                 var location = document.getElementById('location-search').value;
                 if (location) {
+                    clearMarkers();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'address': location}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
@@ -249,47 +254,55 @@
                     });
                 }
             });
+            document.getElementById('set-radius').addEventListener('click', function() {
+            searchRadius = parseInt(document.getElementById('radius').value);  // Update the search radius
+            var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+            searchNearbyRestaurants(userLocation);  // Re-fetch restaurants with the new radius
+            });
+
 
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
                 var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
         }
-
+        function clearMarkers() {
+            // Loop through markers array and remove them from the map
+            markers.forEach(function(marker) {
+                marker.setMap(null);
+            });
+            markers = [];  // Reset the markers array
+        }
         function searchNearbyRestaurants(location) {
+            clearMarkers();  // Clear previous markers
+
             var request = {
                 location: location,
-                radius: searchRadius,
+                radius: searchRadius,  // Use the updated radius
                 type: ['restaurant']
             };
+
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    // Clear previous markers if needed (optional)
-                    //clearMarkers();
-
                     results.forEach(function(place) {
-                        new google.maps.Marker({
+                        var marker = new google.maps.Marker({
                             map: map,
                             position: place.geometry.location,
                             title: place.name
                         });
+                        markers.push(marker);  // Add the marker to the array
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
                 }
             });
         }
+
         /*
-        function clearMarkers() {
-            // Clear existing markers from the map
-            markers.forEach(function(marker) {
-                marker.setMap(null); // Remove marker from the map
-            });
-            markers = []; // Reset the markers array
-        }
         function addMarker(location, title) {
             var marker = new google.maps.Marker({
                 map: map,
