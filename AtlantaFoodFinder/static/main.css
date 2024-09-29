@@ -136,6 +136,7 @@ form{
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
 }
 
+<<<<<<< HEAD
 /* Re-did the home page */
 
 /* The search area */
@@ -184,6 +185,15 @@ body, html {
     height: auto;
 }
 
+=======
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Lato', Arvo;
+}
+
+>>>>>>> main
 .header-image {
     background: url('/static/atlantaeats.jpg') no-repeat center center;
     background-size: cover;
@@ -264,6 +274,7 @@ input[type="text"], select, button {
 
 .search-area {
     padding: 5px 0;
+<<<<<<< HEAD
     display: flex;
     justify-content: center; /* Centers horizontally */
     align-items: center;     /* Centers vertically */
@@ -275,6 +286,8 @@ input[type="text"], select, button {
 
 label[for="radius"] {
     color: white; /* Make the label for search radius white */
+=======
+>>>>>>> main
 }
 
 button {
@@ -303,6 +316,7 @@ button:hover {
     h1, h2 {
         font-size: 5vw; /* Smaller text on very small screens */
     }
+<<<<<<< HEAD
 }
 
 .favorites-list {
@@ -321,4 +335,6 @@ button:hover {
 .favorites-list h3 {
     margin: 0;
     font-size: 1.5em;
+=======
+>>>>>>> main
 }

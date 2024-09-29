@@ -35,6 +35,10 @@ def login_view(request):
 
     return render(request, 'users/login.html', {'form': form})
 
+@login_required(login_url='/login/')
+def favorites(request):
+    return render(request, 'users/favorites.html',{})
+
 def base(request):
     return render(request, 'users/base.html', {})
 
