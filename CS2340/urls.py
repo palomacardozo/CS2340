@@ -23,10 +23,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("SignUp/", views.signup, name="signup"),
     path('login/', views.login_view, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path("", include("AtlantaFoodFinder.urls")),
     path("", views.base, name='home'),
-    path('login/', views.login_view, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     path('favorites/', views.favorites, name='favorites'),
     path('add_to_favorites/<int:restaurant_id>/', views.add_to_favorites, name='add_to_favorites'),
