@@ -330,9 +330,10 @@
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
 
-            const cuisineType = place.types
-                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ')
-                : 'N/A';
+
+            const  cuisineType = place.primaryTypeDisplayName
+                    ? place.primaryTypeDisplayName
+                    : 'N/A';
 
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
