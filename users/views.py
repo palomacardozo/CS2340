@@ -43,8 +43,9 @@ def get_place_details(place_id):
     place_details = gmaps.place(place_id=place_id)
     return place_details
 
-@login_required(login_url='/login/')
 def favorites(request):
+    if not request.user.is_authenticated:
+        return render(request, 'users/favorites.html', {'message': "You must log in or sign up to view favorites."})
     user_favorites = Favorite.objects.filter(user=request.user)
     return render(request, 'users/favorites.html', {'favorites': user_favorites})
 

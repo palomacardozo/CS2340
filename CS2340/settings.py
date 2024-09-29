@@ -137,4 +137,4 @@ AUTH_USER_MODEL = 'users.CustomUser'
 GOOGLE_API_KEY = 'AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons'
 
 # Redirect after logout
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = 'home'
