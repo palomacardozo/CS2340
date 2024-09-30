@@ -130,29 +130,30 @@
     <input id="search-box" type="text" placeholder="Search for restaurants">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
-
-    <label for="radius">Select search radius:</label>
-    <select id="radius">
-        <option value="500">0.5 km</option>
-        <option value="1000" selected>1 km</option>
-        <option value="5000">5 km</option>
-        <option value="10000">10 km</option>
-        <option value="20000">20 km</option>
-        <option value="50000">50 km</option>
-    </select>
-    <button id="set-radius">Set Radius</button>
-
-    <label for="min-rating">Select minimum rating:</label>
-    <select id="min-rating">
-        <option value="0">All ratings</option>
-        <option value="1">1 star</option>
-        <option value="2">2 stars</option>
-        <option value="3">3 stars</option>
-        <option value="4">4 stars</option>
-        <option value="5">5 stars</option>
-    </select>
-    <button id="set-rating">Set Minimum Rating</button>
-
+</div>
+<div class="filter-container">
+    <div class="filter-area">
+         <label for="radius">Select search radius:</label>
+        <select id="radius">
+            <option value="500">0.5 km</option>
+            <option value="1000" selected>1 km</option>
+            <option value="5000">5 km</option>
+            <option value="10000">10 km</option>
+            <option value="20000">20 km</option>
+            <option value="50000">50 km</option>
+        </select>
+        <button id="set-radius">Set Radius</button>
+        <label for="min-rating">Select minimum rating:</label>
+        <select id="min-rating">
+            <option value="0">All ratings</option>
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+        </select>
+        <button id="set-rating">Set Minimum Rating</button>
+    </div>
 </div>
     <div id="map"></div>
     <div id="place-details"></div>
