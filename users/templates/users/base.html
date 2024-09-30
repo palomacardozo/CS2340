@@ -255,9 +255,9 @@
                 }
             });
             document.getElementById('set-radius').addEventListener('click', function() {
-            searchRadius = parseInt(document.getElementById('radius').value);  // Update the search radius
-            var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
-            searchNearbyRestaurants(userLocation);  // Re-fetch restaurants with the new radius
+                searchRadius = parseInt(document.getElementById('radius').value);  // Update the search radius
+                //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                searchNearbyRestaurants(location);  // Re-fetch restaurants with the new radius
             });
 
 
