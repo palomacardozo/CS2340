@@ -99,10 +99,11 @@
 
 <meta name="csrf-token" content="{{ csrf_token }}">
 
-{% for restaurant in restaurants %}
-<button class="heart-button" data-place-id="{{ place.place_id }}">
-    🤍 Add to Favorites
-</button>
+{{% for restaurant in restaurants %}
+    <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
+    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="heart-btn-{{ restaurant.place_id }}">
+        🤍 Add to Favorites
+    </button>
 {% endfor %}
 
 <div class="header-image">
@@ -537,28 +538,30 @@
         console.log("favorites.js loaded!");
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Select all heart buttons on the page
-            const heartButtons = document.querySelectorAll('.heart-button');
+            console.log("JavaScript loaded and event delegation activated!");
 
-            // Loop through each button
-            heartButtons.forEach(function(button) {
-                // Add an event listener for the click event
-                button.addEventListener('click', function(event) {
-                    event.preventDefault(); // Prevent any default behavior
+            document.body.addEventListener('click', function(event) {
+                if (event.target.classList.contains('heart-button')) {
+                    event.preventDefault();
+                    console.log("Heart button clicked!");
 
-                    const heartButton = event.currentTarget;
-                    const placeId = heartButton.dataset.placeId; // Get the place ID from the data attribute
+                    const heartButton = event.target;
+                    const placeId = heartButton.dataset.placeId;
+                    console.log('Place ID:', placeId);
 
                     // Toggle the hearted class
                     heartButton.classList.toggle('hearted');
-                    const isFavorited = heartButton.classList.contains('hearted'); // Check if it's favorited
 
-                    // Send an AJAX request to the server to update favorites
+                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
+
+                    const isFavorited = heartButton.classList.contains('hearted');
+
+                    // Send AJAX request to update favorites
                     fetch(`/add_to_favorites/${placeId}/`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken') // Include the CSRF token
+                            'X-CSRFToken': getCookie('csrftoken')
                         },
                         body: JSON.stringify({ favorited: isFavorited })
                     })
@@ -566,9 +569,10 @@
                         if (!response.ok) {
                             console.error('Failed to update favorites.');
                             return;
+                        } else {
+                            console.log("Favorites updated successfully!");  // Log successful updates
                         }
 
-                        // Update the button text based on the favorited status
                         if (isFavorited) {
                             heartButton.textContent = '❤️ Remove from Favorites';
                         } else {
@@ -576,7 +580,7 @@
                         }
                     })
                     .catch(error => console.error('Error:', error));
-                });
+                }
             });
 
             // Function to get the CSRF token from cookies
