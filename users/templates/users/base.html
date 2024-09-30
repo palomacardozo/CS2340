@@ -160,6 +160,17 @@
     </select>
     <button id="set-radius">Set Radius</button>
 
+    <label for="min-rating">Select minimum rating:</label>
+    <select id="min-rating">
+        <option value="0">All ratings</option>
+        <option value="1">1 star</option>
+        <option value="2">2 stars</option>
+        <option value="3">3 stars</option>
+        <option value="4">4 stars</option>
+        <option value="5">5 stars</option>
+    </select>
+    <button id="set-rating">Set Minimum Rating</button>
+
     <div id="map"></div>
     <div id="place-details"></div>
 
@@ -254,10 +265,18 @@
                     });
                 }
             });
+            /*
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);  // Update the search radius
                 //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 searchNearbyRestaurants(location);  // Re-fetch restaurants with the new radius
+            });*/
+
+            document.getElementById('set-rating').addEventListener('click', function() {
+                //var minRating = parseFloat(document.getElementById('min-rating').value);
+                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
+                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
             });
 
 
@@ -288,13 +307,18 @@
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
+
+                    minRating = parseFloat(document.getElementById('min-rating').value);
+
                     results.forEach(function(place) {
-                        var marker = new google.maps.Marker({
-                            map: map,
-                            position: place.geometry.location,
-                            title: place.name
-                        });
-                        markers.push(marker);  // Add the marker to the array
+                        if (place.rating >= minRating) {
+                            var marker = new google.maps.Marker({
+                                map: map,
+                                position: place.geometry.location,
+                                title: place.name
+                            });
+                            markers.push(marker);  // Add the marker to the array
+                        }
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
