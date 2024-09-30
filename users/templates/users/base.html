@@ -345,6 +345,7 @@
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     displayPlaceDetails(place);
                     infowindow.setContent(place.name);
+                    place.place_id = placeId;
                     infowindow.setPosition(place.geometry.location);
                     infowindow.open(map);
                 } else {
