@@ -375,11 +375,23 @@
                         <!-- Review Submission Card -->
                         <div class="review-submission-card">
                             <h4>Submit a Review:</h4>
-                                    <form id="review-form-{{place.id }}" method="POST">
-                                        <input type="text" name="rating" placeholder="Rate 1-5" required>
-                                        <textarea name="review-text" placeholder="Write your review" required></textarea>
-                                        <button type="submit">Submit Review</button>
-                                    </form>
+                                <form id="review-form-{{ place.place_id }}" onsubmit="submitReview(event, '{{ place.place_id }}')">
+                                    <label for="rating">Rating:</label>
+                                    <select id="rating" name="rating" required>
+                                        <option value="" disabled selected>Select a rating</option>
+                                        <option value="1">1 Star</option>
+                                        <option value="2">2 Stars</option>
+                                        <option value="3">3 Stars</option>
+                                        <option value="4">4 Stars</option>
+                                        <option value="5">5 Stars</option>
+                                    </select>
+
+                                    <label for="review-text">Review:</label>
+                                    <textarea id="review-text" name="review-text" rows="4" required></textarea>
+
+                                    <button type="submit">Submit Review</button>
+                                </form>
+
 
                         </div>
                     </div>
@@ -411,16 +423,9 @@
 
         // Function to handle review submission
         function submitReview(event, placeId) {
-            event.preventDefault(); // Prevent form submission
-
-            console.log('Place ID:', placeId); // Debugging output
+            event.preventDefault(); // Prevent default form submission
 
             const form = document.getElementById(`review-form-${placeId}`);
-            if (!form) {
-                console.error(`Form not found for place ID: ${placeId}`);
-                return; // Exit the function if the form is not found
-            }
-
             const formData = new FormData(form);
             const rating = formData.get('rating');
             const reviewText = formData.get('review-text');
@@ -430,20 +435,18 @@
             fetch('/submit-review/', {
                 method: 'POST',
                 headers: {
-                    'X-CSRFToken': getCookie('csrftoken'), // Ensure this gets the CSRF token correctly
+                    'X-CSRFToken': getCookie('csrftoken'),
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    restaurant: placeId,
+                    restaurant: placeId, // Make sure this is the correct id
                     rating: rating,
                     review: reviewText
                 }),
             })
-
             .then(response => {
                 if (response.ok) {
                     alert('Review submitted successfully!');
-                    displayPlaceDetails(place); // Refresh to see the new review
                 } else {
                     return response.json().then(errorData => {
                         alert(`Failed to submit review: ${errorData.error}`);
@@ -452,6 +455,7 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
 
 
 
@@ -472,6 +476,7 @@
             }
             return cookieValue;
         }
+
 
 
 

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission, User
 from django.db import models
 from AtlantaFoodFinder.models import Locations
 
@@ -27,9 +27,10 @@ class Favorite(models.Model):
 
 
 class Review(models.Model):
-    restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)  # Ensure this is a ForeignKey if using Locations
-    rating = models.PositiveIntegerField()  # Make sure this is the correct type
+    restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)  # Ensure this is the correct model
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    rating = models.IntegerField()
     review_text = models.TextField()
 
     def __str__(self):
-        return f"{self.restaurant.name} - {self.rating} Stars"
+        return f'Review by {self.user} for {self.restaurant}'

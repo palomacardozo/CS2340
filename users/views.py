@@ -74,13 +74,13 @@ def submit_review(request):
             rating = data.get('rating')
             review_text = data.get('review')
 
-            # Validate inputs
-            if not restaurant_id or not rating or not review_text:
-                return JsonResponse({'error': 'All fields are required.'}, status=400)
+            # Debugging output
+            print(f'Restaurant ID: {restaurant_id}, Rating: {rating}, Review: {review_text}')
 
             # Create and save the review
             new_review = Review(
-                restaurant_id=restaurant_id,  # Ensure restaurant_id is a ForeignKey field in your Review model
+                restaurant_id=restaurant_id,  # stored internally as restaurant_id
+                # user=request.user,  # if we wanted to associate the review with the logged-in user
                 rating=rating,
                 review_text=review_text
             )
@@ -88,11 +88,10 @@ def submit_review(request):
 
             return JsonResponse({'message': 'Review submitted successfully!'}, status=201)
 
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
 
 
