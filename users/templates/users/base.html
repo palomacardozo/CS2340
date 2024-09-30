@@ -141,12 +141,31 @@
         <option value="50000">50 km</option>
     </select>
     <button id="set-radius">Set Radius</button>
+
+    <label for="min-rating">Select minimum rating:</label>
+    <select id="min-rating">
+        <option value="0">All ratings</option>
+        <option value="1">1 star</option>
+        <option value="2">2 stars</option>
+        <option value="3">3 stars</option>
+        <option value="4">4 stars</option>
+        <option value="5">5 stars</option>
+    </select>
+    <button id="set-rating">Set Minimum Rating</button>
+
 </div>
     <div id="map"></div>
     <div id="place-details"></div>
+
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+        var markers = [];  // Array to hold all markers
+
+        google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -217,6 +236,7 @@
             document.getElementById('location-submit').addEventListener('click', function() {
                 var location = document.getElementById('location-search').value;
                 if (location) {
+                    clearMarkers();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'address': location}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
@@ -229,32 +249,47 @@
                 }
             });
 
+            document.getElementById('set-rating').addEventListener('click', function() {
+                //var minRating = parseFloat(document.getElementById('min-rating').value);
+                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
+                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+            });
+
+
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
                 var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
         }
 
         function searchNearbyRestaurants(location) {
+            clearMarkers();  // Clear previous markers
+
             var request = {
                 location: location,
-                radius: searchRadius,
+                radius: searchRadius,  // Use the updated radius
                 type: ['restaurant']
             };
+
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    // Clear previous markers if needed (optional)
-                    clearMarkers();
+
+                    minRating = parseFloat(document.getElementById('min-rating').value);
 
                     results.forEach(function(place) {
-                        new google.maps.Marker({
-                            map: map,
-                            position: place.geometry.location,
-                            title: place.name
-                        });
+                        if (place.rating >= minRating) {
+                            var marker = new google.maps.Marker({
+                                map: map,
+                                position: place.geometry.location,
+                                title: place.name
+                            });
+                            markers.push(marker);  // Add the marker to the array
+                        }
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
