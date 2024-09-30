@@ -184,6 +184,22 @@ body, html {
     height: auto;
 }
 
+
+.heart-button {
+    font-size: 1.2em;
+    font-family: Helvetica, sans-serif;
+    margin-bottom: 10px; /* Space below headings */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.3s;
+}
+
+.heart-button.hearted {
+    color: red !important;  /* Red color for the heart when it's favorited */
+}
+
 .header-image {
     background: url('/static/atlantaeats.jpg') no-repeat center center;
     background-size: cover;
@@ -212,11 +228,62 @@ body, html {
 .navbar a {
     color: white;
     text-decoration: none;
-    padding: 8px;
-    font-size: 20px;
+    display: inline-block;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    padding: 5px 10px;
+    margin: 0 10px;
+    border-radius: 5px;
 }
 
 .navbar a:hover {
+    background-color: #bfb8b8;
+    color: #252423;
+    border-radius: 5px;
+}
+
+.navbar form button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    margin: 0 10px;
+    cursor: pointer;
+    vertical-align: middle;
+    border-radius: 5px;
+}
+
+.navbar form button:hover {
+    background-color: #bfb8b8;
+    color: #252423;
+    border-radius: 5px;
+}
+
+/* Styling for the form and button in the navbar */
+.logout-form {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0;
+    text-decoration: none;
+}
+
+.logout-button:hover{
     background-color: #bfb8b8;
     color: #252423;
 }

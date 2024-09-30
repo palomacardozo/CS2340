@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Atlanta Food Finder</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
     <link rel="stylesheet" href="{% static 'main.css' %}">
@@ -20,7 +21,7 @@
         #map {
             margin: 0 auto;
             border: 2px solid #fff;
-            height: 800px;
+            height: 490px;
             width: 100%;
         }
         #search-box {
@@ -112,29 +113,30 @@
 </head>
 <body>
 
-{% for restaurant in restaurants %}
-<button onclick="window.location.href='{% url 'add_to_favorites' restaurant.id %}'" class="heart-button">
-    🤍 Add to Favorites
-</button>
+{% for restaurant in places %}
+    <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
+    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="heart-btn-{{ restaurant.place_id }}">
+        🤍 Add to Favorites
+    </button>
 {% endfor %}
 
 <div class="header-image">
     <div class="navbar">
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'favorites' %}">Favorites</a>
-    {% if user.is_authenticated %}
+        {% if user.is_authenticated %}
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
-        <button type="submit" class="ourbutton">Logout</button>
+            <button type="submit" class="nav-link logout-button">Logout</button>
         </form>
-    {% else %}
+        {% else %}
         <a href="{% url 'login' %}">Login</a>
         <a href="{% url 'signup' %}">Signup</a>
         {% endif %}
     </div>
-        <h1>Atlanta Food Finder</h1>
-        <h2>Explore restaurants near you</h2>
-    </div>
+    <h1>Atlanta Food Finder</h1>
+    <h2>Explore restaurants near you</h2>
+</div>
 
 <div class="search-area">
     <input id="search-box" type="text" placeholder="Search for restaurants">
@@ -315,6 +317,7 @@
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     displayPlaceDetails(place);
                     infowindow.setContent(place.name);
+                    place.place_id = placeId;
                     infowindow.setPosition(place.geometry.location);
                     infowindow.open(map);
                 } else {
@@ -422,5 +425,75 @@
     }
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
+    -->
+    <Script>
+        // Log to verify the script is loaded
+        console.log("favorites.js loaded!");
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("JavaScript loaded and event delegation activated!");
+
+            document.body.addEventListener('click', function(event) {
+                if (event.target.classList.contains('heart-button')) {
+                    event.preventDefault();
+                    console.log("Heart button clicked!");
+
+                    const heartButton = event.target;
+                    const placeId = heartButton.dataset.placeId;
+                    console.log('Place ID:', placeId);
+
+                    // Toggle the hearted class
+                    heartButton.classList.toggle('hearted');
+
+                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
+
+                    const isFavorited = heartButton.classList.contains('hearted');
+
+                    // Send AJAX request to update favorites
+                    fetch(`/add_to_favorites/${placeId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ favorited: isFavorited })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to update favorites.');
+                            return;
+                        } else {
+                            console.log("Favorites updated successfully!");  // Log successful updates
+                        }
+
+                        if (isFavorited) {
+                            heartButton.textContent = '❤️ Remove from Favorites';
+                        } else {
+                            heartButton.textContent = '🤍 Add to Favorites';
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+                }
+            });
+
+            // Function to get the CSRF token from cookies
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+    </Script>
+
 </body>
 </html>
