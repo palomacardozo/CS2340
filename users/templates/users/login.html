@@ -6,13 +6,13 @@
     <title>Login</title>
     <style>
         body {
-            background-color: #1e243c; /* Subtle dark background */
+            background: #52514e;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-family: Helvetica, sans-serif;
+            font-family: 'Lato', Arvo;
         }
         h1 {
             font-size: 2.2em;
@@ -20,7 +20,7 @@
             margin-bottom: 20px;
         }
         .login-container {
-            background-color: #2c3355; /* Card background color */
+            background: #3c3b39;
             padding: 40px 30px;
             border-radius: 10px;
             box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
@@ -53,14 +53,15 @@
             flex: 1; /* Allow input to take up remaining space */
             box-sizing: border-box; /* Include padding and borders in the width */
             outline: none;
+            font-family: 'Lato', Arvo;
         }
         input[type="text"]:focus, input[type="password"]:focus {
-            border-color: #5a9fff; /* Highlight border on focus */
+            border-color: #b0862a; /* Highlight border on focus */
             box-shadow: 0 0 8px rgba(90, 159, 255, 0.4); /* Add glow on focus */
         }
         button {
             padding: 12px 20px;
-            background-color: #5a9fff;
+            background-color: #b0862a;
             color: white;
             border: none;
             border-radius: 5px;
@@ -69,9 +70,11 @@
             transition: background-color 0.3s, transform 0.3s;
             width: 100%; /* Make button same width as the input fields */
             box-sizing: border-box;
+            font-family: 'Lato', Arvo;
+            text-transform: uppercase;
         }
         button:hover {
-            background-color: #4a8cd4;
+            background-color: #b0862a;
             transform: translateY(-2px); /* Slight lift effect on hover */
         }
         button:active {
@@ -100,8 +103,8 @@
 
             <button type="submit">Login</button>
         </form>
-        <p>Forgot your password? <a href="#" style="color: #5a9fff; text-decoration: none;">Reset It</a></p>
-        <p>Don't have an account? <a href="/SignUp" style="color: #5a9fff; text-decoration: none;">Sign Up</a></p>
+        <p>Forgot your password? <a href="#" style="color: white; text-decoration: none;">Reset It</a></p>
+        <p>Don't have an account? <a href="/SignUp" style="color: white; text-decoration: none;">Sign Up</a></p>
     </div>
 </body>
 </html>

@@ -27,11 +27,11 @@
     background-color: #2D323E;
     color: white;
     font-weight: bold;
-  }
+}
 
 .myTable td, .myTable th {
     border: 0.01em solid #e3e2e2;
-  }
+}
 
 .myTable tr:nth-child(even){background-color: #f9f8f8;}
 
@@ -67,6 +67,7 @@ form{
     width: 98%;
     border-radius: 5px;
 }
+
 .ourbutton{
     margin-right: 10px;
     height: 30px;
@@ -94,8 +95,8 @@ form{
 }
 
 .titleholder{
-    display: 'flex';
-    justify-content:'space-between';
+    display: flex;
+    justify-content:space-between;
     background-color: #4267B2;
     align-items: center;
     height: 40px;
@@ -104,9 +105,7 @@ form{
 .linkholder{
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
     flex-direction: column;
-
 }
-
 
 .title{
     color: white;
@@ -135,6 +134,258 @@ form{
     margin-top: 20px;
     margin-bottom: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, .15);
+}
+
+/* Re-did the home page */
+
+/* The search area */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    font-family: 'Lato', Arvo;
+    background: #3c3b39;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    justify-content: space-between; /* Push the restaurant details up away the bottom */
+    padding-bottom: 20px; /* Consistent padding at the bottom */
+}
+
+/* Map container/content fills all available space */
+#map {
+    flex: 1;
+    min-height: 400px; /* Min height to prevent cut off */
+}
+
+.place-details-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 20px auto;
+    min-height: 500px;
+    height: auto;
+}
+
+.place-details-card, .reviews-card {
+    background-color: white;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+}
 
 
+.heart-button {
+    font-size: 1.2em;
+    font-family: Helvetica, sans-serif;
+    margin-bottom: 10px; /* Space below headings */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.3s;
+}
+
+.heart-button.hearted {
+    color: red !important;  /* Red color for the heart when it's favorited */
+}
+
+.header-image {
+    background: url('/static/atlantaeats.jpg') no-repeat center center;
+    background-size: cover;
+    height: 75vh;
+    color: white;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    padding: 5px 10px;
+    margin: 0 10px;
+    border-radius: 5px;
+}
+
+.navbar a:hover {
+    background-color: #bfb8b8;
+    color: #252423;
+    border-radius: 5px;
+}
+
+.navbar form button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    line-height: 1.5em;
+    margin: 0 10px;
+    cursor: pointer;
+    vertical-align: middle;
+    border-radius: 5px;
+}
+
+.navbar form button:hover {
+    background-color: #bfb8b8;
+    color: #252423;
+    border-radius: 5px;
+}
+
+/* Styling for the form and button in the navbar */
+.logout-form {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    padding: 0;
+    text-decoration: none;
+}
+
+.logout-button:hover{
+    background-color: #bfb8b8;
+    color: #252423;
+}
+
+h1, h2 {
+    background-color: none;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    margin: 0;
+    text-align: center;
+    font-size: calc(16px + 1vw);
+}
+
+h2 {
+    font-size: calc(14px + 0.5vw); /* Smaller size, adjust as needed */
+}
+
+.content {
+    background-color: #2e2d2c;
+    color: white;
+    padding: 20px;
+    height: 20vh;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+input[type="text"], select, button {
+    font-family: 'Lato', Arvo;
+    margin: 10px;
+    padding: 8px;
+    height: 30px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    background: white;
+    color: #3c3b39;
+    width: auto;
+    max-width: 200px;
+    font-size: 16px;
+}
+
+.search-area {
+    padding: 5px 0;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    flex-wrap: wrap;         /* Wraps on smaller screens */
+    gap: 5px;               /* Space between each element */
+    margin-top: 20px;
+    margin-right: 7%; /* Shift to right */
+}
+
+label[for="radius"] {
+    color: white; /* Make the label for search radius white */
+}
+
+button {
+    cursor: pointer;
+    background-color: #555;
+    color: white;
+    font-family: 'Lato', Arvo;
+}
+
+button:hover {
+    background-color: #777;
+}
+
+/* CHANGES ACCORDINGLY */
+@media (max-width: 600px) {
+    .navbar a {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    input[type="text"], select, button {
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    h1, h2 {
+        font-size: 5vw; /* Smaller text on very small screens */
+    }
+}
+
+.favorites-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.favorites-list li {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.favorites-list h3 {
+    margin: 0;
+    font-size: 1.5em;
 }
