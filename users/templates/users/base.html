@@ -387,6 +387,7 @@
                                     </select>
 
                                     <label for="review-text">Review:</label>
+
                                     <textarea id="review-text" name="review-text" rows="4" required></textarea>
 
                                     <button type="submit">Submit Review</button>
@@ -457,9 +458,6 @@
         }
 
 
-
-
-
         // Function to get CSRF token from cookies
         function getCookie(name) {
             let cookieValue = null;
@@ -478,8 +476,6 @@
         }
 
 
-
-
         // Function to generate star symbols based on the rating
         function generateStars(rating) {
             if (!rating) return ''; // Return empty if no rating
@@ -494,12 +490,14 @@
             return `<span class="stars">${stars}</span>`; // Wrap stars in a span with class
         }
 
+
+
         function createMarker(place, map) {
-    const marker = new google.maps.Marker({
-        position: place.geometry.location,
-        map: map,
-        title: place.name
-    });
+            const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map: map,
+                title: place.name
+            });
 
     // Event listener for when the marker is clicked
     google.maps.event.addListener(marker, 'click', function () {
