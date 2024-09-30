@@ -92,21 +92,6 @@
             margin-bottom: 10px;
         }
 
-        .heart-button {
-            font-size: 1.2em;
-            font-family: Helvetica, sans-serif;
-            margin-bottom: 10px; /* Space below headings */
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            outline: none;
-            transition: color 0.3s;
-}
-
-        .heart-button.hearted {
-            color: red;  /* Red color for the heart when it's favorited */
-        }
-
     </style>
 
 </head>
@@ -115,7 +100,7 @@
 <meta name="csrf-token" content="{{ csrf_token }}">
 
 {% for restaurant in restaurants %}
-<button onclick="window.location.href='{% url 'add_to_favorites' place.id %}'" class="heart-button">
+<button class="heart-button" data-place-id="{{ place.place_id }}">
     🤍 Add to Favorites
 </button>
 {% endfor %}
@@ -551,7 +536,6 @@
         // Log to verify the script is loaded
         console.log("favorites.js loaded!");
 
-        // Wait for the document to load before running the script
         document.addEventListener('DOMContentLoaded', function() {
             // Select all heart buttons on the page
             const heartButtons = document.querySelectorAll('.heart-button');

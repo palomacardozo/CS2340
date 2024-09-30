@@ -184,6 +184,22 @@ body, html {
     height: auto;
 }
 
+
+.heart-button {
+    font-size: 1.2em;
+    font-family: Helvetica, sans-serif;
+    margin-bottom: 10px; /* Space below headings */
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    outline: none;
+    transition: color 0.3s;
+}
+
+.heart-button.hearted {
+    color: red !important;  /* Red color for the heart when it's favorited */
+}
+
 .header-image {
     background: url('/static/atlantaeats.jpg') no-repeat center center;
     background-size: cover;
