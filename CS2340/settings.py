@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'AtlantaFoodFinder.apps.AtlantafoodfinderConfig',
     'users.apps.UsersConfig',
-    'users',
 
 ]
 

@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Atlanta Food Finder</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
     <link rel="stylesheet" href="{% static 'main.css' %}">
@@ -97,9 +98,7 @@
 </head>
 <body>
 
-<meta name="csrf-token" content="{{ csrf_token }}">
-
-{{% for restaurant in restaurants %}
+{% for restaurant in places %}
     <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
     <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="heart-btn-{{ restaurant.place_id }}">
         🤍 Add to Favorites
@@ -561,7 +560,8 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken')
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
                         },
                         body: JSON.stringify({ favorited: isFavorited })
                     })
