@@ -308,9 +308,9 @@
         }
 
         function getPlaceDetails(placeId) {
-            var request = {
+            const request = {
                 placeId: placeId,
-                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
+                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'primaryType', 'reviews']
             };
 
             service.getDetails(request, function(place, status) {
@@ -330,9 +330,20 @@
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
 
-            const cuisineType = place.types ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ') : 'N/A';
+            const specificRestaurantTypes = [
+                'chinese_restaurant', 'american_restaurant', 'steak_house', 'pizza_restaurant',
+                'seafood_restaurant', 'mexican_restaurant', 'indian_restaurant', 'italian_restaurant',
+                'japanese_restaurant', 'korean_restaurant', 'thai_restaurant', 'barbecue_restaurant'
+            ];
 
-            const maxReviewLength = 200; // Set your character limit here
+        // Check if primaryType is present
+         let primaryType = place.primaryType || place.primaryTypeDisplayName;
+
+         // If primaryType is not available, fallback to searching through the types array
+         if (!primaryType && place.types) {
+            primaryType = place.types.find(type => specificRestaurantTypes.includes(type)) || 'restaurant';
+         }
+            const maxReviewLength = 200; // Set your character limit herew
             const reviews = place.reviews ? place.reviews.map((review, index) => {
                 let reviewText = review.text;
                 let isLongReview = reviewText.length > maxReviewLength;
@@ -361,7 +372,7 @@
                         <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
                         <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
-                        <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
+                        <p><strong>Cuisine Type:</strong> ${primaryType || 'N/A'}</p>
                         <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
                             🤍
                         </button></p>
