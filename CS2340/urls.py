@@ -29,4 +29,6 @@ urlpatterns = [
 
     path('favorites/', views.favorites, name='favorites'),
     path('add_to_favorites/<int:restaurant_id>/', views.add_to_favorites, name='add_to_favorites'),
+
+    path('submit-review/', views.submit_review, name='submit_review'),
 ]

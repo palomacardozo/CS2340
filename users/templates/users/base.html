@@ -371,6 +371,17 @@
                     <div class="reviews-card">
                         <h4>Reviews:</h4>
                         <div class="reviews">${reviews}</div>
+
+                        <!-- Review Submission Card -->
+                        <div class="review-submission-card">
+                            <h4>Submit a Review:</h4>
+                                    <form id="review-form-{{place.id }}" method="POST">
+                                        <input type="text" name="rating" placeholder="Rate 1-5" required>
+                                        <textarea name="review-text" placeholder="Write your review" required></textarea>
+                                        <button type="submit">Submit Review</button>
+                                    </form>
+
+                        </div>
                     </div>
                 </div>
             `;
@@ -397,6 +408,71 @@
                 });
             }
         }
+
+        // Function to handle review submission
+        function submitReview(event, placeId) {
+            event.preventDefault(); // Prevent form submission
+
+            console.log('Place ID:', placeId); // Debugging output
+
+            const form = document.getElementById(`review-form-${placeId}`);
+            if (!form) {
+                console.error(`Form not found for place ID: ${placeId}`);
+                return; // Exit the function if the form is not found
+            }
+
+            const formData = new FormData(form);
+            const rating = formData.get('rating');
+            const reviewText = formData.get('review-text');
+
+            console.log('Submitting review:', { restaurant: placeId, rating, review: reviewText }); // Debugging output
+
+            fetch('/submit-review/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'), // Ensure this gets the CSRF token correctly
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    restaurant: placeId,
+                    rating: rating,
+                    review: reviewText
+                }),
+            })
+
+            .then(response => {
+                if (response.ok) {
+                    alert('Review submitted successfully!');
+                    displayPlaceDetails(place); // Refresh to see the new review
+                } else {
+                    return response.json().then(errorData => {
+                        alert(`Failed to submit review: ${errorData.error}`);
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+
+
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
 
 
         // Function to generate star symbols based on the rating
@@ -438,7 +514,28 @@
 
 
         google.maps.event.addDomListener(window, 'load', initMap);
+
+
     </script>
+
+    <script type="text/javascript">
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
         <!--
         <input id="search-box" type="text" placeholder="Search for restaurants">
         <div id="map"></div>

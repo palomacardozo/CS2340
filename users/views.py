@@ -8,6 +8,11 @@ from AtlantaFoodFinder.models import Locations
 from .models import Favorite
 import googlemaps
 from django.conf import settings
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import Review
 
 def signup(request):
     if request.method == 'POST':
@@ -54,3 +59,40 @@ def add_to_favorites(request, restaurant_id):
     restaurant = get_object_or_404(Locations, id=restaurant_id)
     Favorite.objects.create(user=request.user, restaurant=restaurant)
     return redirect('favorites')  # Redirect to the favorites page
+
+
+@csrf_exempt  # Temporarily disable CSRF for testing (remove after testing)
+@login_required(login_url='/login/')
+def submit_review(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON data from the request body
+            data = json.loads(request.body)
+
+            # Extract relevant data
+            restaurant_id = data.get('restaurant')  # Ensure this matches your frontend
+            rating = data.get('rating')
+            review_text = data.get('review')
+
+            # Validate inputs
+            if not restaurant_id or not rating or not review_text:
+                return JsonResponse({'error': 'All fields are required.'}, status=400)
+
+            # Create and save the review
+            new_review = Review(
+                restaurant_id=restaurant_id,  # Ensure restaurant_id is a ForeignKey field in your Review model
+                rating=rating,
+                review_text=review_text
+            )
+            new_review.save()
+
+            return JsonResponse({'message': 'Review submitted successfully!'}, status=201)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+

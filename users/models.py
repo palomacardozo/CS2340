@@ -24,3 +24,12 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.restaurant.name}"
+
+
+class Review(models.Model):
+    restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)  # Ensure this is a ForeignKey if using Locations
+    rating = models.PositiveIntegerField()  # Make sure this is the correct type
+    review_text = models.TextField()
+
+    def __str__(self):
+        return f"{self.restaurant.name} - {self.rating} Stars"
