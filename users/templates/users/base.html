@@ -544,6 +544,7 @@
                 if (event.target.classList.contains('heart-button')) {
                     event.preventDefault();
                     console.log("Heart button clicked!");
+                    console.log(event.target);
 
                     const heartButton = event.target;
                     const placeId = heartButton.dataset.placeId;
