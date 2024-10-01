@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Atlanta Food Finder</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <style>
@@ -54,6 +54,7 @@
             font-size: 1.2em; /* Adjust size if necessary */
         }
 
+
         .reviews-card h4 {
             font-size: 1.5em; /* Slightly smaller for subheadings */
             margin-bottom: 10px; /* Space below subheadings */
@@ -81,6 +82,7 @@
             font-size: 1.2em; /* Adjust size if necessary */
         }
 
+
         .place-details-container {
             display: flex; /* Align cards horizontally */
             justify-content: space-between; /* Space between cards */
@@ -88,6 +90,7 @@
             margin: 20px auto; /* Center the container */
             height: 400px; /* Set a fixed height for the container */
         }
+
 
         #location-search {
             margin-bottom: 10px;
@@ -142,24 +145,43 @@
     <input id="search-box" type="text" placeholder="Search for restaurants">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
-
-    <label for="radius">Select search radius:</label>
-    <select id="radius">
-        <option value="500">0.5 km</option>
-        <option value="1000" selected>1 km</option>
-        <option value="5000">5 km</option>
-        <option value="10000">10 km</option>
-        <option value="20000">20 km</option>
-    </select>
-    <button id="set-radius">Set Radius</button>
+</div>
+<div class="filter-container">
+    <div class="filter-area">
+         <label for="radius">Select search radius:</label>
+        <select id="radius">
+            <option value="500">0.5 km</option>
+            <option value="1000" selected>1 km</option>
+            <option value="5000">5 km</option>
+            <option value="10000">10 km</option>
+            <option value="20000">20 km</option>
+            <option value="50000">50 km</option>
+        </select>
+        <button id="set-radius">Set Radius</button>
+        <label for="min-rating">Select minimum rating:</label>
+        <select id="min-rating">
+            <option value="0">All ratings</option>
+            <option value="1">1 star</option>
+            <option value="2">2 stars</option>
+            <option value="3">3 stars</option>
+            <option value="4">4 stars</option>
+            <option value="5">5 stars</option>
+        </select>
+        <button id="set-rating">Set Minimum Rating</button>
     </div>
-
+</div>
     <div id="map"></div>
     <div id="place-details"></div>
 
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
+        var markers = [];  // Array to hold all markers
+
+        google.maps.event.addDomListener(window, 'load', initMap);
+
+
+
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -233,6 +255,7 @@
             document.getElementById('location-submit').addEventListener('click', function() {
                 var location = document.getElementById('location-search').value;
                 if (location) {
+                    clearMarkers();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'address': location}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
@@ -245,36 +268,55 @@
                 }
             });
 
+            document.getElementById('set-rating').addEventListener('click', function() {
+                //var minRating = parseFloat(document.getElementById('min-rating').value);
+                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
+                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+            });
+
+
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
                 var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
+                clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
         }
 
         function searchNearbyRestaurants(location) {
-    var request = {
-        location: location,
-        radius: searchRadius,
-        type: ['restaurant']
-    };
-    service = new google.maps.places.PlacesService(map);
-    service.nearbySearch(request, function(results, status) {
-        if (status === google.maps.places.PlacesServiceStatus.OK) {
-            clearMarkers(); // Optional
-            results.forEach(function(place) {
-                createMarker(place, map); // Create markers for each place
+            clearMarkers();
+
+            var request = {
+                location: location,
+                radius: searchRadius,
+                type: ['restaurant']
+            };
+            service = new google.maps.places.PlacesService(map);
+            service.nearbySearch(request, function(results, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    // Clear previous markers if needed (optional)
+                    clearMarkers();
+
+                    minRating = parseFloat(document.getElementById('min-rating').value);
+
+                    results.forEach(function(place) {
+                        if (place.rating >= minRating) {
+                            createMarker(place, map); // Create markers for each place
+                        }
+                    });
+                } else {
+                    console.error('Places API request failed: ' + status);
+                }
             });
-        } else {
-            console.error('Places API request failed: ' + status);
         }
-    });
-}
         function clearMarkers() {
-            // Clear existing markers from the map (optional)
-            // You may want to maintain a list of markers to clear them effectively
-            // For simplicity, we'll not implement this right now
+            // Clear existing markers from the map
+            markers.forEach(function(marker) {
+                marker.setMap(null); // Remove marker from the map
+            });
+            markers = []; // Reset the markers array
         }
 
         function searchPlaceDetails(location) {
@@ -413,19 +455,36 @@
         }
 
         function createMarker(place, map) {
-        const marker = new google.maps.Marker({
-            position: place.geometry.location,
-            map: map,
-            title: place.name
-        });
+            const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map: map,
+                title: place.name
+            });
 
-     google.maps.event.addListener(marker, 'click', function () {
-        getPlaceDetails(place.place_id); // Fetch details on click
+    // Event listener for when the marker is clicked
+          /*  This was the code from improveRebased...below is from anotherRestaurantDetails
+    google.maps.event.addListener(marker, 'click', function () {
+        // Use the PlacesService to get more details about the restaurant
+        var service = new google.maps.places.PlacesService(map);
+
+        service.getDetails({ placeId: place.place_id }, function (result, status) {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                // Call the displayPlaceDetails function to show the full details
+                displayPlaceDetails(result);
+            } else {
+                console.error("Error fetching place details: " + status);
+            }
         });
-    }
+    });*/
+
+    google.maps.event.addListener(marker, 'click', function () {
+        getPlaceDetails(place.place_id); // Fetch details on click
+    });
+}
+
         google.maps.event.addDomListener(window, 'load', initMap);
     </script>
-    -->
+
     <Script>
         // Log to verify the script is loaded
         console.log("favorites.js loaded!");
