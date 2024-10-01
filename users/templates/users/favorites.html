@@ -45,7 +45,7 @@
                                     <h3>{{ favorite.restaurant.name }}</h3> <!-- Updated reference -->
                                     <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p> <!-- Updated reference -->
                                     <p><strong>Website:</strong><a href="{{ favorite.restaurant.website }}" target="_blank">Visit Website</a></p>
-                                    <button onclick="window.location.href='{% url 'restaurant_details' favorite.place_id %}'" class="ourbutton">
+                                    <button onclick="window.location.href='{% url 'add_to_favorites' favorite.place_id %}'" class="ourbutton">
                                         View Details
                                     </button>
                                 </li>
