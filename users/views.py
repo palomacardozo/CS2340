@@ -74,34 +74,29 @@ def add_to_favorites(request, place_id):
 
         place = get_place_details(place_id)
 
-        if is_favorited:
-            # Check if the location already exists in the Locations model
-            location, created = Locations.objects.get_or_create(
-                place_id=place_id,
-                defaults={
-                    'name': place['result']['name'],
-                    'address': place['result']['formatted_address'],
-                    'latitude': place['result']['geometry']['location']['lat'],
-                    'longitude': place['result']['geometry']['location']['lng'],
-                    'website': place['result'].get('website', None)
-                }
-            )
+        # Check if the location already exists in the Locations model
+        location, location_created = Locations.objects.get_or_create(
+            place_id=place_id,
+            defaults={
+                'name': place['result']['name'],
+                'address': place['result']['formatted_address'],
+                'lat': place['result']['geometry']['location']['lat'],
+                'lng': place['result']['geometry']['location']['lng'],
+            }
+        )
 
-            favorite, created = Favorite.objects.get_or_create(
-                user=request.user, # Saved for each user
-                place_id=place_id,
-                restaurant=location,
-                address=place['result']['formatted_address'],
-                website=place['result'].get('website', None)
-            )
-            if created:
-                print(f"Restaurant {place['result']['name']} saved to favorites!")
-            else:
-                print(f"Restaurant {place['result']['name']} is already in favorites.")
-        else:
+        favorite, favorite_created = Favorite.objects.get_or_create(
+            user=request.user, # Saved for each user
+            place_id=place_id,
+            restaurant=location,
+            address=place['result']['formatted_address'],
+            website=place['result'].get('website', None)
+        )
+        if not favorite_created or not is_favorited:
             print(f"Restaurant with place_id {place_id} else from favorites.")
             Favorite.objects.filter(user=request.user, place_id=place_id).delete()
-            # defaults to this
+        else:
+            print(f"Restaurant {place['result']['name']} saved to favorites!")
 
         return JsonResponse({'status': 'success'})
 
