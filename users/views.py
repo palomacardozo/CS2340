@@ -6,10 +6,11 @@ from django.contrib.auth import login, authenticate
 from .forms import SignupForm
 from django.shortcuts import get_object_or_404
 from AtlantaFoodFinder.models import Locations
-from .models import Favorite
 import googlemaps
 from django.conf import settings
 import json
+from django.contrib.auth import get_user_model
+from users.models import Favorite
 
 def signup(request):
     if request.method == 'POST':
@@ -48,7 +49,12 @@ def get_place_details(place_id):
 def favorites(request):
     if not request.user.is_authenticated:
         return render(request, 'users/favorites.html', {'message': "You must log in or sign up to view favorites."})
+
     user_favorites = Favorite.objects.filter(user=request.user)
+
+    for fav in user_favorites:
+        print(fav.restaurant.name, fav.restaurant.address)
+
     return render(request, 'users/favorites.html', {'favorites': user_favorites})
 
 @login_required(login_url='/login/')
@@ -63,10 +69,26 @@ def add_to_favorites(request, place_id):
         is_favorited = data.get('favorited')
 
         if is_favorited:
+            # Fetch place details before using 'place'
+            place = get_place_details(place_id)
+
+            # Check if the location already exists in the Locations model
+            location, created = Locations.objects.get_or_create(
+                place_id=place_id,
+                defaults={
+                    'name': place['result']['name'],
+                    'address': place['result']['formatted_address'],
+                    'latitude': place['result']['geometry']['location']['lat'],
+                    'longitude': place['result']['geometry']['location']['lng'],
+                    'website': place['result'].get('website', None)
+                }
+            )
+
             place = get_place_details(place_id)
             favorite, created = Favorite.objects.get_or_create(
-                user=request.user,
+                user=request.user, # Saved for each user
                 place_id=place_id,
+                restaurant=location,
                 address=place['result']['formatted_address'],
                 website=place['result'].get('website', None)
             )
@@ -82,4 +104,3 @@ def add_to_favorites(request, place_id):
 
     # Handle non-AJAX requests
     return JsonResponse({'status': 'error'}, status=400)
-

@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from AtlantaFoodFinder.models import Locations
+from django.contrib.auth import get_user_model
 
 class CustomUser(AbstractUser):
     groups = models.ManyToManyField(

@@ -7,6 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Your Favorites</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
 </head>
@@ -41,12 +42,9 @@
                         <ul class="favorites-list">
                             {% for favorite in favorites %}
                                 <li class="place-details-card">
-                                    <h3>{{ favorite.restaurant_name }}</h3> <!-- Updated reference -->
-                                    <p><strong>Address:</strong> {{ favorite.address }}</p> <!-- Updated reference -->
-                                    <p><strong>Website:</strong>
-                                        <a href="{{ favorite.website }}" target="_blank">Visit Website
-                                        </a>
-                                    </p>
+                                    <h3>{{ favorite.restaurant.name }}</h3> <!-- Updated reference -->
+                                    <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p> <!-- Updated reference -->
+                                    <p><strong>Website:</strong><a href="{{ favorite.restaurant.website }}" target="_blank">Visit Website</a></p>
                                     <button onclick="window.location.href='{% url 'restaurant_details' favorite.place_id %}'" class="ourbutton">
                                         View Details
                                     </button>
@@ -60,7 +58,7 @@
                 </div>
             {% else %}
             <div style="font-size: 24px; font-weight: bold;">
-                You need to login or signup!
+                You need to login or signup to use favorites!
             </div>
             {% endif %}
         </div>
