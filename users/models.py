@@ -21,6 +21,9 @@ class Favorite(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)
     added_at = models.DateTimeField(auto_now_add=True)
+    place_id = models.CharField(max_length=255, default="Unknown Place ID")
+    address = models.CharField(max_length=255, default="Unknown Address")
+    website = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.restaurant.name}"
