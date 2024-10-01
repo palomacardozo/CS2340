@@ -62,12 +62,21 @@ def add_to_favorites(request, place_id):
         print(data)
         is_favorited = data.get('favorited')
 
-        #if is_favorited:
-            # Add to favorites
-            #Favorite.objects.get_or_create(user=request.user, restaurant=location)
-        #else:
-            # Remove from favorites
-            #Favorite.objects.filter(user=request.user, restaurant=location).delete()
+        if is_favorited:
+            place = get_place_details(place_id)
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user,
+                place_id=place_id,
+                address=place['result']['formatted_address'],
+                website=place['result'].get('website', None)
+            )
+            if created:
+                print(f"Restaurant {place['result']['name']} saved to favorites!")
+            else:
+                print(f"Restaurant {place['result']['name']} is already in favorites.")
+        else:
+            Favorite.objects.filter(user=request.user, place_id=place_id).delete()
+            print(f"Restaurant with place_id {place_id} removed from favorites.")
 
         return JsonResponse({'status': 'success'})
 

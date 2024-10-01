@@ -3,6 +3,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,33 +33,38 @@
                 <h2>Explore restaurants near you</h2>
             </div>
 
-    <div class="content">
-    {%  if user.is_authenticated %}
-        <div class="place-details-container">
-            {% if favorites %}
-                <ul class="favorites-list">
-                    {% for favorite in favorites %}
-                        <li class="place-details-card">
-                            <h3>{{ favorite.restaurant.name }}</h3>
-                            <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p>
-                            <p><strong>Phone:</strong> {{ favorite.restaurant.phone_number }}</p>
-                            <p><a href="{{ favorite.restaurant.website }}" target="_blank">Visit Website</a></p>
-                            <button onclick="window.location.href='{% url 'restaurant_details' favorite.restaurant.id %}'" class="ourbutton">
-                                View Details
-                            </button>
-                        </li>
-                    {% endfor %}
-                </ul>
+        <div class="content">
+            {% if user.is_authenticated %}
+                <div class="place-details-container">
+                    {% if favorites %}
+                        <h3>You have {{ favorites|length }} favorite(s):</h3>
+                        <ul class="favorites-list">
+                            {% for favorite in favorites %}
+                                <li class="place-details-card">
+                                    <h3>{{ favorite.restaurant_name }}</h3> <!-- Updated reference -->
+                                    <p><strong>Address:</strong> {{ favorite.address }}</p> <!-- Updated reference -->
+                                    <p><strong>Website:</strong>
+                                        <a href="{{ favorite.website }}" target="_blank">Visit Website
+                                        </a>
+                                    </p>
+                                    <button onclick="window.location.href='{% url 'restaurant_details' favorite.place_id %}'" class="ourbutton">
+                                        View Details
+                                    </button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p style="text-align: center; font-weight: bold; font-size: 24px; color: #ffffff;">
+                            No favorites yet. Go add some!
+                    {% endif %}
+                </div>
             {% else %}
-                <p>No favorites yet. Go add some!</p>
+            <div style="font-size: 24px; font-weight: bold;">
+                You need to login or signup!
+            </div>
             {% endif %}
         </div>
-        {% else %}
-        <div style="font-size: 24px; font-weight: bold;">
-            You need to login or signup!
-        </div>
-        {% endif %}
     </div>
+{% endblock %}
 </body>
-
 </html>
