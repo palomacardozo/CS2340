@@ -100,7 +100,7 @@
 
 {% for restaurant in places %}
     <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
-    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="heart-btn-{{ restaurant.place_id }}">
+    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="{{ restaurant.place_id }}">
         🤍 Add to Favorites
     </button>
 {% endfor %}
@@ -196,6 +196,7 @@
                 }
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
+                    console.log(id)
                     if (place.geometry) {
                         new google.maps.Marker({
                             map: map,
@@ -253,7 +254,7 @@
                         new google.maps.Marker({
                             map: map,
                             position: place.geometry.location,
-                            title: place.name
+                            title: place.name,
                         });
                     });
                 } else {
@@ -297,6 +298,27 @@
             });
         }
 
+        function getPlace(placeId) {
+            return new Promise((resolve, reject) => {
+                var request = {
+                    placeId: placeId,
+                    fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
+                };
+
+                service.getDetails(request, function(place, status) {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        place.place_id = placeId;
+                        resolve(place); // Resolve the promise with the place
+                    } else {
+                        console.error('Place details request failed: ' + status);
+                        reject(status); // Reject the promise with the error status
+                    }
+                });
+            });
+        }
+
+
+
         function getPlaceDetails(placeId) {
             var request = {
                 placeId: placeId,
@@ -305,9 +327,9 @@
 
             service.getDetails(request, function(place, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    place.place_id = placeId
                     displayPlaceDetails(place);
                     infowindow.setContent(place.name);
-                    place.place_id = placeId;
                     infowindow.setPosition(place.geometry.location);
                     infowindow.open(map);
                 } else {
@@ -354,7 +376,8 @@
                         <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
                         <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
-                        <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
+                        <p><strong>Place ID:</strong>${place.place_id}</p>
+                        <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="${place.place_id}">
                             🤍
                         </button></p>
                     </div>
@@ -418,6 +441,7 @@
         service.getDetails({ placeId: place.place_id }, function (result, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 // Call the displayPlaceDetails function to show the full details
+                console.log(result)
                 displayPlaceDetails(result);
             } else {
                 console.error("Error fetching place details: " + status);
@@ -426,114 +450,8 @@
     });
 }
 
-
         google.maps.event.addDomListener(window, 'load', initMap);
-    </script>
-        <!--
-        <input id="search-box" type="text" placeholder="Search for restaurants">
-        <div id="map"></div>
-    </div>
 
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
-    <script>
-        function initMap() {
-            // Initialize the map
-            var map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat: 33.7490, lng: -84.3880},  // Center at Atlanta
-                zoom: 12
-            });
-
-            // Create the search box and link it to the UI element
-            var input = document.getElementById('search-box');
-            var searchBox = new google.maps.places.SearchBox(input);
-
-            // Bias the search box results towards the current map's viewport
-            map.addListener('bounds_changed', function() {
-                searchBox.setBounds(map.getBounds());
-            });
-
-            var markers = [];
-
-            // Listen for the event fired when the user selects a prediction and retrieve
-            // more details for that place
-            searchBox.addListener('places_changed', function() {
-                var places = searchBox.getPlaces();
-
-                if (places.length == 0) {
-                    return;
-                }
-
-                // Clear out the old markers
-                markers.forEach(function(marker) {
-                    marker.setMap(null);
-                });
-                markers = [];
-
-                var bounds = new google.maps.LatLngBounds();
-
-                places.forEach(function(place) {
-                    // Ensure the place type contains "restaurant"
-                    if (!place.types.includes("restaurant")) {
-                        return;
-                    }
-
-                    if (!place.geometry || !place.geometry.location) {
-                        console.log("Returned place contains no geometry");
-                        return;
-                    }
-
-                    // Create a marker for each restaurant place
-                    var marker = new google.maps.Marker({
-                        map: map,
-                        title: place.name,
-                        position: place.geometry.location
-                    });
-
-                    markers.push(marker);
-
-                    if (place.geometry.viewport) {
-                        bounds.union(place.geometry.viewport);
-                    } else {
-                        bounds.extend(place.geometry.location);
-                    }
-                });
-                map.fitBounds(bounds);
-            });
-
-            // Search nearby restaurants automatically
-            searchNearbyRestaurants(map);
-        }
-
-        function searchNearbyRestaurants(map) {
-            var service = new google.maps.places.PlacesService(map);
-
-            // Define the request to search for restaurants nearby
-            var request = {
-                location: map.getCenter(),
-                radius: '500',  // Search within 500 meters
-                type: ['restaurant']  // Limit to restaurants
-            };
-
-            // Use PlacesService to search for nearby restaurants
-            service.nearbySearch(request, function(results, status) {
-                if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    results.forEach(function(place) {
-                        // Create a marker for each restaurant found
-                        new google.maps.Marker({
-                            map: map,
-                            position: place.geometry.location,
-                            title: place.name
-                        });
-                    });
-                }
-            });
-        }
-
-        // Initialize the map when the window loads
-        google.maps.event.addDomListener(window, 'load', initMap);
-    </script>
-    -->
-    <Script>
         // Log to verify the script is loaded
         console.log("favorites.js loaded!");
 
@@ -544,10 +462,10 @@
                 if (event.target.classList.contains('heart-button')) {
                     event.preventDefault();
                     console.log("Heart button clicked!");
-                    console.log(event.target);
+                    console.log(event)
 
                     const heartButton = event.target;
-                    const placeId = heartButton.dataset.placeId;
+                    const placeId = heartButton.id;
                     console.log('Place ID:', placeId);
 
                     // Toggle the hearted class
@@ -557,6 +475,42 @@
 
                     const isFavorited = heartButton.classList.contains('hearted');
 
+                    getPlace(placeId)
+                        .then(place => {
+                            place.isFavorited = isFavorited;
+                            // Send AJAX request to update favorites
+                            fetch(`/add_to_favorites/${placeId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCookie('csrftoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify(place)
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    console.error('Failed to update favorites.');
+                                    return;
+                                } else {
+                                    console.log("Favorites updated successfully!");  // Log successful updates
+                                }
+
+                                if (isFavorited) {
+                                    heartButton.textContent = '❤️ Remove from Favorites';
+                                } else {
+                                    heartButton.textContent = '🤍 Add to Favorites';
+                                }
+
+                            })
+                            .catch(error => console.error('Error:', error));
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+
+                    /*
                     // Send AJAX request to update favorites
                     fetch(`/add_to_favorites/${placeId}/`, {
                         method: 'POST',
@@ -581,7 +535,7 @@
                             heartButton.textContent = '🤍 Add to Favorites';
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => console.error('Error:', error)); */
                 }
             });
 
