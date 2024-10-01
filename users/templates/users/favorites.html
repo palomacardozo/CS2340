@@ -48,6 +48,10 @@
                                     <button onclick="window.location.href='{% url 'add_to_favorites' favorite.place_id %}'" class="ourbutton">
                                         View Details
                                     </button>
+                                    <button class="remove-button" data-place-id="{{ favorite.place_id }}">
+                                        X
+                                    </button>
+
                                 </li>
                             {% endfor %}
                         </ul>

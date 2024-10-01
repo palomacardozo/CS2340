@@ -491,26 +491,26 @@
                                     'X-CSRFToken': getCookie('csrftoken'),
                                     'X-Requested-With': 'XMLHttpRequest'
                                 },
-                                body: JSON.stringify({ favorited: isFavorited })
+                                body: JSON.stringify({favorited: isFavorited})
                             })
-                            .then(response => {
-                                if (!response.ok) {
-                                    console.error('Failed to update favorites.');
-                                    return;
-                                }
+                                .then(response => {
+                                    if (!response.ok) {
+                                        console.error('Failed to update favorites.');
+                                        return;
+                                    }
 
-                                console.log("Favorites updated successfully!");  // Log successful updates
+                                    console.log("Favorites updated successfully!");  // Log successful updates
 
-                                if (isFavorited) {
-                                    heartButton.textContent = '❤️';
-                                    console.log("Restaurant added to favorites!");
-                                } else {
-                                    heartButton.textContent = '🤍';
-                                    console.log("Restaurant removed from favorites.");
-                                }
+                                    if (isFavorited) {
+                                        heartButton.textContent = '❤️';
+                                        console.log("Restaurant added to favorites!");
+                                    } else {
+                                        heartButton.textContent = '🤍';
+                                        console.log("Restaurant removed from favorites.");
+                                    }
 
-                            })
-                            .catch(error => console.error('Error:', error));
+                                })
+                                .catch(error => console.error('Error:', error));
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -542,6 +542,32 @@
                         }
                     })
                     .catch(error => console.error('Error:', error)); */
+                // 'X' click for removing favorites
+                } else if (event.target.classList.contains('remove-button')) {
+                    event.preventDefault();
+
+                    const placeId = event.target.getAttribute('data-place-id');
+                    console.log(`Removing favorite with Place ID: ${placeId}`);
+
+                    fetch(`/favorites/remove/${placeId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ remove: true })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to remove favorite.');
+                            return;
+                        }
+
+                        console.log("Favorite removed successfully!");
+                        event.target.closest('.place-details-card').remove(); // Remove the card from the DOM
+                    })
+                    .catch(error => console.error('Error:', error));
                 }
             });
 

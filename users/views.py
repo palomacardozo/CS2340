@@ -102,3 +102,13 @@ def add_to_favorites(request, place_id):
 
     # Handle non-AJAX requests
     return JsonResponse({'status': 'error'}, status=400)
+
+@login_required(login_url='/login/')
+def remove_favorite(request, place_id):
+    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        try:
+            Favorite.objects.filter(user=request.user, place_id=place_id).delete()
+            return JsonResponse({'status': 'success'})
+        except Favorite.DoesNotExist:
+            return JsonResponse({'status': 'error'}, status=404)
+    return JsonResponse({'status': 'error'}, status=400)
