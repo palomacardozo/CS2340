@@ -340,6 +340,27 @@ input[type="text"], select, button {
     margin-right: 7%; /* Shift to right */
 }
 
+.filter-area {
+    padding: 5px 0;
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center;     /* Centers vertically */
+    flex-wrap: wrap;         /* Wraps on smaller screens */
+    gap: 5px;               /* Space between each element */
+    margin-top: 20px;
+    margin-right: 7%; /* Shift to right */
+}
+.filter-area label {
+    color: white;
+}
+
+
+.filter-container {
+        display: flex;
+        justify-content: center; /* Horizontally center the filter area */
+        margin: 20px 0; /* Optional: Add some spacing around */
+    }
+
 label[for="radius"] {
     color: white; /* Make the label for search radius white */
 }
