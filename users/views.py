@@ -101,6 +101,7 @@ def add_to_favorites(request, place_id):
         else:
             print(f"Restaurant with place_id {place_id} else from favorites.")
             Favorite.objects.filter(user=request.user, place_id=place_id).delete()
+            # defaults to this
 
         return JsonResponse({'status': 'success'})
 
