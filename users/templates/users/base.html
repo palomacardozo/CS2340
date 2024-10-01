@@ -396,7 +396,7 @@
             detailsDiv.innerHTML = '';  // Clear previous details
 
             const cuisineType = place.types
-                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ')
+                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ') //filters it to only take restaurants, classified as a restaurants somewhere else in the code
                 : 'N/A';
 
             const maxReviewLength = 200; // Set your character limit here
