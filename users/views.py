@@ -54,19 +54,20 @@ def favorites(request):
 @login_required(login_url='/login/')
 def add_to_favorites(request, place_id):
     # Get the location using place_id
-    location = get_object_or_404(Locations, place_id=place_id)
+    #location = get_object_or_404(Locations, place_id=place_id)
 
     # Handle AJAX request
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
+        print(data)
         is_favorited = data.get('favorited')
 
-        if is_favorited:
+        #if is_favorited:
             # Add to favorites
-            Favorite.objects.get_or_create(user=request.user, restaurant=location)
-        else:
+            #Favorite.objects.get_or_create(user=request.user, restaurant=location)
+        #else:
             # Remove from favorites
-            Favorite.objects.filter(user=request.user, restaurant=location).delete()
+            #Favorite.objects.filter(user=request.user, restaurant=location).delete()
 
         return JsonResponse({'status': 'success'})
 

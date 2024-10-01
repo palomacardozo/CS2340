@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlanta Food Finder</title>
     <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Atlanta Food Finder</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <style>
@@ -54,7 +54,6 @@
             font-size: 1.2em; /* Adjust size if necessary */
         }
 
-
         .reviews-card h4 {
             font-size: 1.5em; /* Slightly smaller for subheadings */
             margin-bottom: 10px; /* Space below subheadings */
@@ -82,7 +81,6 @@
             font-size: 1.2em; /* Adjust size if necessary */
         }
 
-
         .place-details-container {
             display: flex; /* Align cards horizontally */
             justify-content: space-between; /* Space between cards */
@@ -91,17 +89,18 @@
             height: 400px; /* Set a fixed height for the container */
         }
 
-
         #location-search {
             margin-bottom: 10px;
         }
+
     </style>
+
 </head>
 <body>
 
 {% for restaurant in places %}
     <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
-    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="heart-btn-{{ restaurant.place_id }}">
+    <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="{{ restaurant.place_id }}">
         🤍 Add to Favorites
     </button>
 {% endfor %}
@@ -130,43 +129,24 @@
     <input id="search-box" type="text" placeholder="Search for restaurants">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
-</div>
-<div class="filter-container">
-    <div class="filter-area">
-         <label for="radius">Select search radius:</label>
-        <select id="radius">
-            <option value="500">0.5 km</option>
-            <option value="1000" selected>1 km</option>
-            <option value="5000">5 km</option>
-            <option value="10000">10 km</option>
-            <option value="20000">20 km</option>
-            <option value="50000">50 km</option>
-        </select>
-        <button id="set-radius">Set Radius</button>
-        <label for="min-rating">Select minimum rating:</label>
-        <select id="min-rating">
-            <option value="0">All ratings</option>
-            <option value="1">1 star</option>
-            <option value="2">2 stars</option>
-            <option value="3">3 stars</option>
-            <option value="4">4 stars</option>
-            <option value="5">5 stars</option>
-        </select>
-        <button id="set-rating">Set Minimum Rating</button>
+
+    <label for="radius">Select search radius:</label>
+    <select id="radius">
+        <option value="500">0.5 km</option>
+        <option value="1000" selected>1 km</option>
+        <option value="5000">5 km</option>
+        <option value="10000">10 km</option>
+        <option value="20000">20 km</option>
+    </select>
+    <button id="set-radius">Set Radius</button>
     </div>
-</div>
+
     <div id="map"></div>
     <div id="place-details"></div>
 
     <script>
         var map, service, infowindow;
         var searchRadius = 1000; // Default radius in meters
-        var markers = [];  // Array to hold all markers
-
-        google.maps.event.addDomListener(window, 'load', initMap);
-
-
-
 
         function initMap() {
             console.log("Initializing map..."); // Log message to check if function is called
@@ -216,6 +196,7 @@
                 }
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
+                    console.log(id)
                     if (place.geometry) {
                         new google.maps.Marker({
                             map: map,
@@ -237,7 +218,6 @@
             document.getElementById('location-submit').addEventListener('click', function() {
                 var location = document.getElementById('location-search').value;
                 if (location) {
-                    clearMarkers();
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'address': location}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
@@ -250,47 +230,32 @@
                 }
             });
 
-            document.getElementById('set-rating').addEventListener('click', function() {
-                //var minRating = parseFloat(document.getElementById('min-rating').value);
-                var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
-                clearMarkers();
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
-            });
-
-
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
                 var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
-                clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
         }
 
         function searchNearbyRestaurants(location) {
-            clearMarkers();  // Clear previous markers
-
             var request = {
                 location: location,
-                radius: searchRadius,  // Use the updated radius
+                radius: '500',
                 type: ['restaurant']
             };
-
             service = new google.maps.places.PlacesService(map);
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-
-                    minRating = parseFloat(document.getElementById('min-rating').value);
+                    // Clear previous markers if needed (optional)
+                    clearMarkers();
 
                     results.forEach(function(place) {
-                        if (place.rating >= minRating) {
-                            var marker = new google.maps.Marker({
-                                map: map,
-                                position: place.geometry.location,
-                                title: place.name
-                            });
-                            markers.push(marker);  // Add the marker to the array
-                        }
+                        new google.maps.Marker({
+                            map: map,
+                            position: place.geometry.location,
+                            title: place.name,
+                        });
                     });
                 } else {
                     console.error('Places API request failed: ' + status);
@@ -298,11 +263,9 @@
             });
         }
         function clearMarkers() {
-            // Clear existing markers from the map
-            markers.forEach(function(marker) {
-                marker.setMap(null); // Remove marker from the map
-            });
-            markers = []; // Reset the markers array
+            // Clear existing markers from the map (optional)
+            // You may want to maintain a list of markers to clear them effectively
+            // For simplicity, we'll not implement this right now
         }
 
         function searchPlaceDetails(location) {
@@ -335,6 +298,27 @@
             });
         }
 
+        function getPlace(placeId) {
+            return new Promise((resolve, reject) => {
+                var request = {
+                    placeId: placeId,
+                    fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
+                };
+
+                service.getDetails(request, function(place, status) {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        place.place_id = placeId;
+                        resolve(place); // Resolve the promise with the place
+                    } else {
+                        console.error('Place details request failed: ' + status);
+                        reject(status); // Reject the promise with the error status
+                    }
+                });
+            });
+        }
+
+
+
         function getPlaceDetails(placeId) {
             var request = {
                 placeId: placeId,
@@ -343,9 +327,9 @@
 
             service.getDetails(request, function(place, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    place.place_id = placeId
                     displayPlaceDetails(place);
                     infowindow.setContent(place.name);
-                    place.place_id = placeId;
                     infowindow.setPosition(place.geometry.location);
                     infowindow.open(map);
                 } else {
@@ -392,9 +376,12 @@
                         <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
                         <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
-                        <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
-                            🤍
-                        </button></p>
+                        <div class="heart-button-container">
+                            <p style="display: inline; margin-right: 10px;"><strong>Add to Your Favorites:</strong></p>
+                            <button class="heart-button" id="${place.place_id}" data-place-id="${place.place_id}">
+                                🤍
+                            </button>
+                        </div>
                     </div>
                     <div class="reviews-card">
                         <h4>Reviews:</h4>
@@ -456,6 +443,7 @@
         service.getDetails({ placeId: place.place_id }, function (result, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 // Call the displayPlaceDetails function to show the full details
+                console.log(result)
                 displayPlaceDetails(result);
             } else {
                 console.error("Error fetching place details: " + status);
@@ -464,10 +452,8 @@
     });
 }
 
-
         google.maps.event.addDomListener(window, 'load', initMap);
-    </script>
-    <Script>
+
         // Log to verify the script is loaded
         console.log("favorites.js loaded!");
 
@@ -478,9 +464,10 @@
                 if (event.target.classList.contains('heart-button')) {
                     event.preventDefault();
                     console.log("Heart button clicked!");
+                    console.log(event)
 
                     const heartButton = event.target;
-                    const placeId = heartButton.dataset.placeId;
+                    const placeId = heartButton.id;
                     console.log('Place ID:', placeId);
 
                     // Toggle the hearted class
@@ -490,6 +477,42 @@
 
                     const isFavorited = heartButton.classList.contains('hearted');
 
+                    getPlace(placeId)
+                        .then(place => {
+                            place.isFavorited = isFavorited;
+                            // Send AJAX request to update favorites
+                            fetch(`/add_to_favorites/${placeId}/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCookie('csrftoken'),
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                },
+                                body: JSON.stringify(place)
+                            })
+                            .then(response => {
+                                if (!response.ok) {
+                                    console.error('Failed to update favorites.');
+                                    return;
+                                } else {
+                                    console.log("Favorites updated successfully!");  // Log successful updates
+                                }
+
+                                if (isFavorited) {
+                                    heartButton.textContent = '❤️';
+                                } else {
+                                    heartButton.textContent = '🤍';
+                                }
+
+                            })
+                            .catch(error => console.error('Error:', error));
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                        });
+
+
+                    /*
                     // Send AJAX request to update favorites
                     fetch(`/add_to_favorites/${placeId}/`, {
                         method: 'POST',
@@ -514,7 +537,7 @@
                             heartButton.textContent = '🤍 Add to Favorites';
                         }
                     })
-                    .catch(error => console.error('Error:', error));
+                    .catch(error => console.error('Error:', error)); */
                 }
             });
 
@@ -535,5 +558,6 @@
             }
         });
     </Script>
+
 </body>
 </html>
