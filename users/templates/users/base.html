@@ -234,14 +234,18 @@
                 }
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
-                    if (place.geometry) {
+                    if (place.geometry && place.rating >= minRating) {
+                        /*
                         new google.maps.Marker({
                             map: map,
                             title: place.name,
                             position: place.geometry.location
-                        });
+                        });*/
+                        createMarker(place, map);
                         bounds.extend(place.geometry.location);
-                    }
+                    } /*else if (place.geometry == true) {
+                        Should we put something here if the place exists but is below the minRating?
+                    }*/
                 });
                 map.fitBounds(bounds);
             });
