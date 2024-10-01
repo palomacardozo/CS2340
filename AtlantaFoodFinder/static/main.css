@@ -186,14 +186,16 @@ body, html {
 
 
 .heart-button {
-    font-size: 1.2em;
+    font-size: 2em;
     font-family: Helvetica, sans-serif;
     margin-bottom: 10px; /* Space below headings */
+    margin-left: 0px;
     background-color: transparent;
     border: none;
     cursor: pointer;
     outline: none;
-    transition: color 0.3s;
+    transition: transform 0.2s ease;
+    align-self: flex-start;
 }
 
 .heart-button.hearted {
