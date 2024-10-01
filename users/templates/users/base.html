@@ -469,19 +469,20 @@
                     console.log(event)
 
                     const heartButton = event.target;
-                    const placeId = heartButton.id;
+                    const placeId = heartButton.getAttribute('data-place-id');
+                    const isFavorited = !heartButton.classList.contains('hearted');
+
+                    console.log('Is Favorited:', isFavorited); // Add this for debugging
                     console.log('Place ID:', placeId);
+                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
 
                     // Toggle the hearted class
                     heartButton.classList.toggle('hearted');
 
-                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
-
-                    const isFavorited = heartButton.classList.contains('hearted');
-
                     getPlace(placeId)
                         .then(place => {
                             place.isFavorited = isFavorited;
+
                             // Send AJAX request to update favorites
                             fetch(`/add_to_favorites/${placeId}/`, {
                                 method: 'POST',
@@ -490,20 +491,22 @@
                                     'X-CSRFToken': getCookie('csrftoken'),
                                     'X-Requested-With': 'XMLHttpRequest'
                                 },
-                                body: JSON.stringify(place)
+                                body: JSON.stringify({ favorited: isFavorited })
                             })
                             .then(response => {
                                 if (!response.ok) {
                                     console.error('Failed to update favorites.');
                                     return;
-                                } else {
-                                    console.log("Favorites updated successfully!");  // Log successful updates
                                 }
+
+                                console.log("Favorites updated successfully!");  // Log successful updates
 
                                 if (isFavorited) {
                                     heartButton.textContent = '❤️';
+                                    console.log("Restaurant added to favorites!");
                                 } else {
                                     heartButton.textContent = '🤍';
+                                    console.log("Restaurant removed from favorites.");
                                 }
 
                             })
@@ -512,7 +515,6 @@
                         .catch(error => {
                             console.error('Error:', error);
                         });
-
 
                     /*
                     // Send AJAX request to update favorites

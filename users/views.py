@@ -65,13 +65,16 @@ def add_to_favorites(request, place_id):
     # Handle AJAX request
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
+
         print(data)
+
         is_favorited = data.get('favorited')
 
-        if is_favorited:
-            # Fetch place details before using 'place'
-            place = get_place_details(place_id)
+        print(f"is_favorited: {is_favorited}")
 
+        place = get_place_details(place_id)
+
+        if is_favorited:
             # Check if the location already exists in the Locations model
             location, created = Locations.objects.get_or_create(
                 place_id=place_id,
@@ -84,7 +87,6 @@ def add_to_favorites(request, place_id):
                 }
             )
 
-            place = get_place_details(place_id)
             favorite, created = Favorite.objects.get_or_create(
                 user=request.user, # Saved for each user
                 place_id=place_id,
@@ -97,8 +99,8 @@ def add_to_favorites(request, place_id):
             else:
                 print(f"Restaurant {place['result']['name']} is already in favorites.")
         else:
+            print(f"Restaurant with place_id {place_id} else from favorites.")
             Favorite.objects.filter(user=request.user, place_id=place_id).delete()
-            print(f"Restaurant with place_id {place_id} removed from favorites.")
 
         return JsonResponse({'status': 'success'})
 
