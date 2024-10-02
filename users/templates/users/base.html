@@ -5,8 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlanta Food Finder</title>
     <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>Atlanta Food Finder</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons&libraries=places"></script>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <style>
@@ -92,21 +92,6 @@
 
         #location-search {
             margin-bottom: 10px;
-        }
-
-        .heart-button {
-            font-size: 1.2em;
-            font-family: Helvetica, sans-serif;
-            margin-bottom: 10px; /* Space below headings */
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            outline: none;
-            transition: color 0.3s;
-}
-
-        .heart-button.hearted {
-            color: red;  /* Red color for the heart when it's favorited */
         }
 
     </style>
@@ -430,7 +415,7 @@
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
                         <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
                         <div class="heart-button-container">
-                            <p style="display: inline; margin-right: 10px;"><strong>Add to Your Favorites:</strong></p>
+                            <p style="display: inline; margin-right: 10px; background: transparent"><strong>Add to Your Favorites:</strong></p>
                             <button class="heart-button" id="${place.place_id}" data-place-id="${place.place_id}">
                                 🤍
                             </button>
@@ -466,6 +451,7 @@
             }
         }
 
+
         // Function to generate star symbols based on the rating
         function generateStars(rating) {
             if (!rating) return ''; // Return empty if no rating
@@ -499,11 +485,15 @@
         service.getDetails({ placeId: place.place_id }, function (result, status) {
             if (status === google.maps.places.PlacesServiceStatus.OK) {
                 // Call the displayPlaceDetails function to show the full details
+                console.log(result)
                 displayPlaceDetails(result);
             } else {
                 console.error("Error fetching place details: " + status);
             }
         });
+    });
+}
+        // Favorites javascript
     });*/
 
             google.maps.event.addListener(marker, 'click', function () {
@@ -512,9 +502,7 @@
         }
 
         google.maps.event.addDomListener(window, 'load', initMap);
-    </script>
 
-    <Script>
         // Log to verify the script is loaded
         console.log("favorites.js loaded!");
 
@@ -528,19 +516,20 @@
                     console.log(event)
 
                     const heartButton = event.target;
-                    const placeId = heartButton.id;
+                    const placeId = heartButton.getAttribute('data-place-id');
+                    const isFavorited = !heartButton.classList.contains('hearted');
+
+                    console.log('Is Favorited:', isFavorited); // Add this for debugging
                     console.log('Place ID:', placeId);
+                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
 
                     // Toggle the hearted class
                     heartButton.classList.toggle('hearted');
 
-                    console.log('Hearted class added:', heartButton.classList);  // Check if the class is added
-
-                    const isFavorited = heartButton.classList.contains('hearted');
-
                     getPlace(placeId)
                         .then(place => {
                             place.isFavorited = isFavorited;
+
                             // Send AJAX request to update favorites
                             fetch(`/add_to_favorites/${placeId}/`, {
                                 method: 'POST',
@@ -549,24 +538,26 @@
                                     'X-CSRFToken': getCookie('csrftoken'),
                                     'X-Requested-With': 'XMLHttpRequest'
                                 },
-                                body: JSON.stringify(place)
+                                body: JSON.stringify({favorited: isFavorited})
                             })
-                            .then(response => {
-                                if (!response.ok) {
-                                    console.error('Failed to update favorites.');
-                                    return;
-                                } else {
+                                .then(response => {
+                                    if (!response.ok) {
+                                        console.error('Failed to update favorites.');
+                                        return;
+                                    }
+
                                     console.log("Favorites updated successfully!");  // Log successful updates
-                                }
 
-                                if (isFavorited) {
-                                    heartButton.textContent = '❤️';
-                                } else {
-                                    heartButton.textContent = '🤍';
-                                }
+                                    if (isFavorited) {
+                                        heartButton.textContent = '❤️';
+                                        console.log("Restaurant added to favorites!");
+                                    } else {
+                                        heartButton.textContent = '🤍';
+                                        console.log("Restaurant removed from favorites.");
+                                    }
 
-                            })
-                            .catch(error => console.error('Error:', error));
+                                })
+                                .catch(error => console.error('Error:', error));
                         })
                         .catch(error => {
                             console.error('Error:', error);
@@ -599,6 +590,32 @@
                         }
                     })
                     .catch(error => console.error('Error:', error)); */
+                // 'X' click for removing favorites
+                } else if (event.target.classList.contains('remove-button')) {
+                    event.preventDefault();
+
+                    const placeId = event.target.getAttribute('data-place-id');
+                    console.log(`Removing favorite with Place ID: ${placeId}`);
+
+                    fetch(`/favorites/remove/${placeId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({ remove: true })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            console.error('Failed to remove favorite.');
+                            return;
+                        }
+
+                        console.log("Favorite removed successfully!");
+                        event.target.closest('.place-details-card').remove(); // Remove the card from the DOM
+                    })
+                    .catch(error => console.error('Error:', error));
                 }
             });
 

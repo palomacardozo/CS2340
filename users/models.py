@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.db import models
 from AtlantaFoodFinder.models import Locations
+from django.contrib.auth import get_user_model
 
 class CustomUser(AbstractUser):
     groups = models.ManyToManyField(
@@ -24,6 +25,9 @@ class Favorite(models.Model):
     place_id = models.CharField(max_length=255, default="Unknown Place ID")
     address = models.CharField(max_length=255, default="Unknown Address")
     website = models.URLField(blank=True, null=True)
+    rating = models.FloatField(null=True, blank=True)
+    phone_number = models.CharField(max_length=20, null=True, blank=True)
+    cuisine_type = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.restaurant.name}"
