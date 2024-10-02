@@ -1,6 +1,5 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate
 from .forms import SignupForm
@@ -11,6 +10,10 @@ from django.conf import settings
 import json
 from django.contrib.auth import get_user_model
 from users.models import Favorite
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import Review
 
 def signup(request):
     if request.method == 'POST':
@@ -113,3 +116,44 @@ def add_to_favorites(request, place_id):
 def remove_favorite(request, pk):
     Favorite.objects.get(pk=pk).delete()
     return redirect('/favorites')
+
+def add_to_favorites(request, restaurant_id):
+    restaurant = get_object_or_404(Locations, id=restaurant_id)
+    Favorite.objects.create(user=request.user, restaurant=restaurant)
+    return redirect('favorites')  # Redirect to the favorites page
+
+
+@csrf_exempt  # Temporarily disable CSRF for testing (remove after testing)
+@login_required(login_url='/login/')
+def submit_review(request):
+    if request.method == 'POST':
+        try:
+            # Parse JSON data from the request body
+            data = json.loads(request.body)
+
+            # Extract relevant data
+            restaurant_id = data.get('restaurant')  # Ensure this matches your frontend
+            rating = data.get('rating')
+            review_text = data.get('review')
+
+            # Debugging output
+            print(f'Restaurant ID: {restaurant_id}, Rating: {rating}, Review: {review_text}')
+
+            # Create and save the review
+            new_review = Review(
+                restaurant_id=restaurant_id,  # stored internally as restaurant_id
+                # user=request.user,  # if we wanted to associate the review with the logged-in user
+                rating=rating,
+                review_text=review_text
+            )
+            new_review.save()
+
+            return JsonResponse({'message': 'Review submitted successfully!'}, status=201)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+
