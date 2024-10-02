@@ -370,8 +370,11 @@
                 });
             });
         }
-
-
+        // Function to check if any keywords from the set are in the array
+        function containsKeywords(arr, keywordSet) {
+            // Use the some() method to check if any element in the array exists in the Set
+            return arr.some(item => keywordSet.has(item));
+        }
 
         function getPlaceDetails(placeId) {
             var request = {
@@ -395,11 +398,26 @@
         function displayPlaceDetails(place) {
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
-
-            const cuisineType = place.types
-                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ') //filters it to only take restaurants, classified as a restaurants somewhere else in the code
-                : 'N/A';
-
+            // Example usage
+            /*
+            var reviewed = service.getDetails({ placeId: placeId, fields: ['name', 'rating', 'reviews'] }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    displayReviews(place.reviews);
+                } else {
+                    document.getElementById('output').innerHTML = 'Error retrieving details.';
+                }
+            }); */
+            const italian = new Set(["Pasta", "Pizza", "Pizzeria", "Cucina", "Trattoria", "Osteria", "Ristorante", "Bistro", "Enoteca",
+                "Taverna", "Gusto", "Sapori", "Pomodoro", "Mamma", "Nonna", "Amici", "Roma", "Napoli", "Toscana",
+                "Vino", "Dolce", "Al Forno", "Fresco", "Bella", "Buona", "Vespa", "Cantina", "Sole", "Margherita",
+                "Milano", "Piazza", "Gnocchi", "Bottega", "Sapori", "Vittoria", "Rosso", "Bianco", "Verde",
+                "Fiorentina", "Tartufo", "Panini"]);
+            const reviewed = ["I", "like", "Pizza"];
+            const hasKeywords = containsKeywords(reviewed, italian);
+            var cuisineType = "not working"
+            console.log(hasKeywords); // Output: true
+            if (hasKeywords){
+                cuisineType = "Italian Restaurants"; }
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
                 let reviewText = review.text;
