@@ -330,19 +330,17 @@
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
 
-            const specificRestaurantTypes = [
-                'chinese_restaurant', 'american_restaurant', 'steak_house', 'pizza_restaurant',
-                'seafood_restaurant', 'mexican_restaurant', 'indian_restaurant', 'italian_restaurant',
-                'japanese_restaurant', 'korean_restaurant', 'thai_restaurant', 'barbecue_restaurant'
+
+            const restaurantTypes = [
+            'chinese_restaurant', 'american_restaurant', 'steak_house', 'pizza_restaurant',
+            'seafood_restaurant', 'mexican_restaurant', 'indian_restaurant', 'italian_restaurant',
+            'japanese_restaurant', 'korean_restaurant', 'thai_restaurant', 'barbecue_restaurant',
+            'french_restaurant', 'brunch_restaurant', 'breakfast_restaurant', 'greek_restaurant',
+            'sushi_restaurant', 'turkish_restaurant', 'vegan_restaurant', 'vegetarian_restaurant'
             ];
 
-        // Check if primaryType is present
-         let primaryType = place.primaryType || place.primaryTypeDisplayName;
+        let specificType = place.types ? place.types.find(type => restaurantTypes.includes(type)) : null;
 
-         // If primaryType is not available, fallback to searching through the types array
-         if (!primaryType && place.types) {
-            primaryType = place.types.find(type => specificRestaurantTypes.includes(type)) || 'restaurant';
-         }
             const maxReviewLength = 200; // Set your character limit herew
             const reviews = place.reviews ? place.reviews.map((review, index) => {
                 let reviewText = review.text;
@@ -372,7 +370,7 @@
                         <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
                         <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
                         <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
-                        <p><strong>Cuisine Type:</strong> ${primaryType || 'N/A'}</p>
+                        <p><strong>Cuisine Type:</strong> ${specificType || 'N/A'}</p>
                         <p><strong>Add to Your Favorites:</strong> <button class="heart-button" id="heart-btn-${place.place_id}">
                             🤍
                         </button></p>
