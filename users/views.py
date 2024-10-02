@@ -63,6 +63,11 @@ def add_to_favorites(request, place_id):
     #location = get_object_or_404(Locations, place_id=place_id)
 
     # Handle AJAX request
+    # Diff types of requests: for example, googling is a get request.
+    # POST takes data from the user- "posting data"
+    # JSON- js format with key value pairs
+    # What I want each url to do with each data request- what data is being posted to me
+
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
         print(data)
@@ -88,7 +93,10 @@ def add_to_favorites(request, place_id):
             place_id=place_id,
             restaurant=location,
             address=place['result']['formatted_address'],
-            website=place['result'].get('website', None)
+            rating=place['result'].get('rating', None),  # Get rating from place details
+            phone_number=place['result'].get('formatted_phone_number', None),  # Get phone number
+            cuisine_type=', '.join(place['result'].get('types', [])),  # Join types as a string for cuisine
+            website=place['result'].get('website', None),
         )
         if not favorite_created or not is_favorited:
             print(f"Restaurant with place_id {place_id} else from favorites.")
@@ -102,11 +110,6 @@ def add_to_favorites(request, place_id):
     return JsonResponse({'status': 'error'}, status=400)
 
 @login_required(login_url='/login/')
-def remove_favorite(request, place_id):
-    if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        try:
-            Favorite.objects.filter(user=request.user, place_id=place_id).delete()
-            return JsonResponse({'status': 'success'})
-        except Favorite.DoesNotExist:
-            return JsonResponse({'status': 'error'}, status=404)
-    return JsonResponse({'status': 'error'}, status=400)
+def remove_favorite(request, pk):
+    Favorite.objects.get(pk=pk).delete()
+    return redirect('/favorites')

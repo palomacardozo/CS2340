@@ -58,11 +58,11 @@
                                     <h3>{{ favorite.restaurant.name }}</h3> <!-- Updated reference -->
                                     <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p> <!-- Updated reference -->
                                     <p><strong>Rating:</strong> {{ favorite.rating }}</p>
-                                    <p><strong>Phone:</strong> {{ favorite.phone_number }}</p>
+                                    <p><strong>Phone Number:</strong> {{ favorite.phone_number }}</p>
                                     <p><strong>Cuisine Type:</strong> {{ favorite.cuisine_type }}</p>
                                     <p><strong>Website:</strong><a href="{{ favorite.website }}" target="_blank">Visit Website</a></p>
                                     <button class="remove-button" data-place-id="{{ favorite.place_id }}">
-                                        X
+                                        <a href="{% url 'remove_favorite' favorite.pk %}">Remove</a>
                                     </button>
 
                                 </li>
