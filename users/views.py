@@ -65,11 +65,9 @@ def add_to_favorites(request, place_id):
     # Handle AJAX request
     if request.method == 'POST' and request.headers.get('x-requested-with') == 'XMLHttpRequest':
         data = json.loads(request.body)
-
         print(data)
 
         is_favorited = data.get('favorited')
-
         print(f"is_favorited: {is_favorited}")
 
         place = get_place_details(place_id)
