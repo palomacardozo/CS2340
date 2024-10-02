@@ -186,20 +186,27 @@ body, html {
 
 
 .heart-button {
-    font-size: 2em;
+    font-size: 1.5em;
     font-family: Helvetica, sans-serif;
     margin-bottom: 10px; /* Space below headings */
     margin-left: 0px;
-    background-color: transparent;
+    background-color: transparent !important;
     border: none;
     cursor: pointer;
     outline: none;
     transition: transform 0.2s ease;
     align-self: flex-start;
+    color: inherit;
 }
 
 .heart-button.hearted {
     color: red !important;  /* Red color for the heart when it's favorited */
+}
+
+.heart-button:hover {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-radius: 0 !important;
 }
 
 .header-image {
