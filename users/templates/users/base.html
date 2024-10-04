@@ -221,12 +221,6 @@
                 places.forEach(function(place) {
                     if (place.geometry && place.rating >= minRating) {
                         cuisineSearch = true;
-                        /*
-                        new google.maps.Marker({
-                            map: map,
-                            title: place.name,
-                            position: place.geometry.location
-                        });*/
                         createMarker(place, map);
                         bounds.extend(place.geometry.location);
                     }
@@ -269,17 +263,11 @@
                     places.forEach(function(place) {
                         if (place.geometry && place.rating >= minRating) {
                             cuisineSearch = true;
-                            /*
-                            new google.maps.Marker({
-                                map: map,
-                                title: place.name,
-                                position: place.geometry.location
-                            });*/
                             createMarker(place, map);
                             bounds.extend(place.geometry.location);
                         }
                     });
-                map.fitBounds(bounds);
+                    map.fitBounds(bounds);
                 } else {
                     searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
                 }
@@ -289,6 +277,7 @@
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
+                //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
