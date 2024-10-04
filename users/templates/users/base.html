@@ -384,7 +384,7 @@
 
             service.getDetails(request, function(place, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    place.place_id = placeId
+                    place.place_id = placeId;
                     displayPlaceDetails(place);
                     infowindow.setContent(place.name);
                     infowindow.setPosition(place.geometry.location);
@@ -407,50 +407,134 @@
                     document.getElementById('output').innerHTML = 'Error retrieving details.';
                 }
             }); */
-            const italian = new Set(["Pasta", "Pizza", "Pizzeria", "Cucina", "Trattoria", "Osteria", "Ristorante", "Bistro", "Enoteca",
-                "Taverna", "Gusto", "Sapori", "Pomodoro", "Mamma", "Nonna", "Amici", "Roma", "Napoli", "Toscana",
-                "Vino", "Dolce", "Al Forno", "Fresco", "Bella", "Buona", "Vespa", "Cantina", "Sole", "Margherita",
-                "Milano", "Piazza", "Gnocchi", "Bottega", "Sapori", "Vittoria", "Rosso", "Bianco", "Verde",
-                "Fiorentina", "Tartufo", "Panini"]);
-            const chinnese = new Set(["Dim Sum", "Wok", "Dragon", "Lotus", "Jade", "Peking", "Szechuan", "Canton", "Mandarin",
-                "Hunan", "Shanghai", "Bamboo", "Phoenix", "Golden", "Panda", "Garden", "Palace", "Dynasty",
-                "Emperor", "Lucky", "Fortune", "Noodle", "Dumpling", "Tea House", "Sichuan", "Chopsticks",
-                "Great Wall", "Lantern", "China", "Beijing", "Ming", "Yuan", "Tiger", "Zen", "Pearl",
-                "Oriental", "Pagoda", "Rice", "Hot Pot", "Wonton", "Kung Pao", "Soy", "Sesame", "Buddha",
-                "Chow Mein", "Lo Mein", "Fried Rice"]);
-            const american = new Set(["Grill", "Barbecue", "BBQ", "Diner", "Burger", "Steakhouse", "Smokehouse", "Roadhouse",
-                "Tavern", "Saloon", "Chophouse", "Wings", "Pit", "Ranch", "Pub", "Bar", "Brewhouse",
-                "Hot Dog", "Cheeseburger", "Griddle", "Shack", "Joint", "Brisket", "Southern",
-                "Fried Chicken", "Ribs", "Buffalo", "American", "Smoke", "Patty", "Cheddar",
-                "All-American", "Route", "Texas", "Bacon", "Chili", "Fries", "Skillet", "Biscuits",
-                "Comfort Food", "Apple Pie", "Country", "Barn", "Depot", "Wagon", "Deli", "Meatloaf",
-                "Café", "Pancake", "Sandwich", "Milkshake", "Roadside", "Grub", "Blue Plate", "Brewery"]);
-            const fastFood = new Set(["Burger", "Fries", "Pizza", "Chicken", "Sandwich", "Sub", "Taco", "Wrap", "Wings", "Hot Dog",
-                "BBQ", "Grill", "Shack", "Deli", "Drive-Thru", "Fried", "Burrito", "Donuts", "Shake",
-                "Ice Cream", "Fast", "Express", "Quick", "Combo", "Meal", "Value", "Snack", "Wing", "Cheeseburger",
-                "Nuggets", "Soda", "Sliders", "Bites", "Box", "Tenders", "Bucket", "To Go", "Chick", "Patty",
-                "Crispy", "Cheddar", "Double", "King", "Subway", "Waffle", "Mc", "Junior", "Loaded", "Drive In",
-                "Quick Bites", "Takeaway", "Fresh", "Deluxe", "Supreme", "Ultimate"]);
-            const korean = new Set(["Korean BBQ", "Bulgogi", "Kimchi", "Korean", "Bibimbap", "Galbi", "Samgyupsal", "Jjigae",
-                "Hot Pot", "Tteokbokki", "Kimbap", "Ssam", "Jajangmyeon", "Dak", "Sundubu", "Manduu",
-                "Gogi", "Chimaek", "Banchan", "Ssam", "Seoul", "Gangnam", "Soju", "Kimchi Stew", "Hoddeok",
-                "Yukgaejang", "Gopchang", "Jumak", "Jeon", "Kkakdugi", "Pajeon", "Budae Jjigae",
-                "Japchae", "Hanjeongsik", "Tteok", "Kalbi", "Sundae", "Makgeolli", "Sikhye", "Bingsu",
-                "Chogajib", "Chimaek", "Doenjang", "Bossam", "Naengmyeon", "Baekban", "Karaage"]);
-            const arr_reviews = reviews.split(" ");
+            var review_text = "";
+            if (place.reviews && place.reviews.length > 0) {
+                  place.reviews.forEach((review, index) => {
+                      review_text += review.text;
+                  });
+                }
+            const arr_reviews = review_text.split(" ").map(word => word.toLowerCase());
+            const italian = new Set([
+            "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "bistro", "enoteca",
+            "taverna", "gusto", "sapori", "pomodoro", "mamma", "nonna", "amici", "roma", "napoli", "toscana",
+            "vino", "dolce", "al forno", "fresco", "bella", "buona", "vespa", "cantina", "sole", "margherita",
+            "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco", "verde",
+            "fiorentina", "tartufo", "panini"
+            ]);
+
+            const mexican = new Set([
+                "taco", "burrito", "quesadilla", "enchilada", "guacamole", "salsa", "fajita", "tortilla", "nachos",
+                "chimichanga", "tamale", "chorizo", "carnitas", "carne asada", "pollo", "mole", "pozole",
+                "tostada", "sopes", "elote", "flan", "horchata", "margarita", "ceviche", "pico de gallo",
+                "al pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos rancheros",
+                "refried beans", "frijoles", "arroz", "tres leches", "empanada", "churros", "taqueria",
+                "sopaipilla", "agua fresca", "sangria", "tequila", "mezcal", "chipotle", "poblano",
+                "chile relleno", "jalapeño", "habanero", "serrano", "carnitas", "birria", "pico",
+                "sopa", "ranchero", "adobo", "tinga", "verde", "salsa verde", "salsa roja", "chimichurri",
+                "nopal", "mexicana", "cochinita pibil", "pico de gallo", "tajin", "flautas", "tostadas",
+                "queso", "queso fresco", "crema", "street corn", "baja", "molcajete", "tamales",
+                "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "tacos al carbon"
+            ]);
+
+            const chinese = new Set([
+                "dim sum", "wok", "dragon", "lotus", "jade", "peking", "szechuan", "canton", "mandarin",
+                "hunan", "shanghai", "bamboo", "phoenix", "golden", "panda", "garden", "palace", "dynasty",
+                "emperor", "lucky", "fortune", "noodle", "dumpling", "tea house", "sichuan", "chopsticks",
+                "great wall", "lantern", "china", "beijing", "ming", "yuan", "tiger", "zen", "pearl",
+                "oriental", "pagoda", "rice", "hot pot", "wonton", "kung pao", "soy", "sesame", "buddha",
+                "chow mein", "lo mein", "fried rice"
+            ]);
+
+            const mediterranean = new Set([
+                "hummus", "falafel", "pita", "shawarma", "kebab", "gyro", "tzatziki", "tabbouleh", "baba ganoush",
+                "dolma", "souvlaki", "baklava", "spanakopita", "moussaka", "tahini", "feta", "olives",
+                "lamb", "chicken shawarma", "bulgur", "couscous", "mezze", "halloumi", "fattoush", "za'atar",
+                "harissa", "sumac", "basmati", "rice pilaf", "mint", "parsley", "grape leaves", "lebneh",
+                "yogurt", "garlic sauce", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
+                "briam", "brioche", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar",
+                "octopus", "calamari", "taramasalata", "swordfish", "olive oil", "fava beans", "kalamata olives",
+                "pomegranate", "lemon", "cucumber", "tomato", "eggplant", "rose water", "sesame", "baklawa",
+                "loukoumades", "orzo", "tarator", "lentil soup", "grilled vegetables", "zucchini", "capers",
+                "sardines", "figs", "chickpeas", "herbs", "spices", "turkish coffee", "greek salad",
+                "cumin", "cardamom", "coriander", "dukkah", "pistachio", "dates", "baba ghanoush", "saffron",
+                "grilled fish", "fennel", "saffron", "sesame seeds", "rosemary", "thyme"
+            ]);
+
+            const american = new Set([
+                "grill", "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse",
+                "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "pub", "bar", "brewhouse",
+                "hot dog", "cheeseburger", "griddle", "shack", "joint", "brisket", "southern",
+                "fried chicken", "ribs", "buffalo", "american", "smoke", "patty", "cheddar",
+                "all-american", "route", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
+                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "deli", "meatloaf",
+                "café", "pancake", "sandwich", "milkshake", "roadside", "grub", "blue plate", "brewery"
+            ]);
+
+            const fastFood = new Set([
+                "burger", "fries", "pizza", "chicken", "sandwich", "sub", "taco", "wrap", "wings", "hot dog",
+                "bbq", "grill", "shack", "deli", "drive-thru", "fried", "burrito", "donuts", "shake",
+                "ice cream", "fast", "express", "quick", "combo", "meal", "value", "snack", "wing", "cheeseburger",
+                "nuggets", "soda", "sliders", "bites", "box", "tenders", "bucket", "to go", "chick", "patty",
+                "crispy", "cheddar", "double", "king", "subway", "waffle", "mc", "junior", "loaded", "drive in",
+                "quick bites", "takeaway", "fresh", "deluxe", "supreme", "ultimate"
+            ]);
+
+            const korean = new Set([
+                "korean bbq", "bulgogi", "kimchi", "korean", "bibimbap", "galbi", "samgyupsal", "jjigae",
+                "hot pot", "tteokbokki", "kimbap", "ssam", "jajangmyeon", "dak", "sundubu", "manduu",
+                "gogi", "chimaek", "banchan", "ssam", "seoul", "gangnam", "soju", "kimchi stew", "hoddeok",
+                "yukgaejang", "gopchang", "jumak", "jeon", "kkakdugi", "pajeon", "budae jjigae",
+                "japchae", "hanjeongsik", "tteok", "kalbi", "sundae", "makgeolli", "sikhye", "bingsu",
+                "chogajib", "chimaek", "doenjang", "bossam", "naengmyeon", "baekban", "karaage"
+            ]);
+
+            const bakeryKeywords = new Set([
+                "bread", "croissant", "danish", "pastry", "muffin", "cookie", "brownie",
+                "cupcake", "doughnut", "tart", "biscotti", "cake", "pudding", "eclair",
+                "scone", "macaron", "cheesecake", "baguette", "focaccia", "pita", "brioche",
+
+                "fresh", "sweet", "savory", "chocolate", "vanilla", "almond", "cinnamon",
+                "lemon", "cream cheese", "buttercream", "nutella", "fruit", "filling",
+                "glaze", "caramel", "icing", "whipped cream", "sprinkles", "bakery", "treat"
+            ]);
+
+            const barKeywords = new Set([
+                "cocktail", "beer", "whiskey", "vodka", "gin", "rum", "tequila", "brandy",
+                "shots", "liquor", "mixology", "draft", "pint", "margarita", "mojito",
+                "martini", "highball", "sour", "lager", "ale", "stout", "IPA", "sour",
+
+                "happy hour", "drink", "menu", "special", "signature", "refreshing",
+                "smooth", "strong", "bitter", "sweet", "spicy", "fruity", "fizzy",
+
+                "local", "craft", "brewery", "distillery", "brewpub", "specialty",
+                "house-made", "tasting"
+            ]);
+
             var cuisineType;
             if (containsKeywords(arr_reviews, italian) === true){
                 cuisineType = "Italian Restaurant";}
-            if (containsKeywords(arr_reviews, american) === true){
+             else if (containsKeywords(arr_reviews, american) === true){
                 cuisineType = "American Restaurant";}
-            if (containsKeywords(arr_reviews, chinnese)){
+            else if (containsKeywords(arr_reviews, chinese)){
                 cuisineType = "Chinese Restaurant";}
-            if (containsKeywords(arr_reviews, fastFood)){
-                cuisineType = "Fast Food Restaurant";}
-            if (containsKeywords(arr_reviews, korean)){
+            else if (containsKeywords(arr_reviews, korean)){
                 cuisineType = "Korean Restaurant";}
+            else if (containsKeywords(arr_reviews, mexican)){
+                cuisineType = "Mexican Restaurant"
+            }
+            else if (containsKeywords(arr_reviews, bakeryKeywords)) {
+                cuisineType = "Bakery"
+            }
+            else if (containsKeywords(arr_reviews, barKeywords)) {
+                cuisineType = "Bar"
+            }
+            else if (containsKeywords(arr_reviews, mediterranean)) {
+                cuisineType = "Mediterranean Restaurant"
+            }
+            else if (containsKeywords(arr_reviews, fastFood)){
+                cuisineType = "Fast Food Restaurant";}
             else {
-                cuisineType = "not working";
+                cuisineType = "Restaurant";
             }
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
