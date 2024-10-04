@@ -125,7 +125,7 @@
 </div>
 
 <div class="search-area">
-    <input id="search-box" type="text" placeholder="Search for restaurants">
+    <input id="search-box" type="text" placeholder="Search for restaurant or a cuisine">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
 </div>
@@ -162,6 +162,7 @@
         var markers = [];  // Array to hold all markers
         var minRating = 0;
         var userLocation = {lat: 33.7488, lng: -84.3879};
+        var cuisineSearch = false;
 
         google.maps.event.addDomListener(window, 'load', initMap);
 
@@ -211,6 +212,7 @@
             });
 
             searchBox.addListener('places_changed', function() {
+                clearMarkers();
                 var places = searchBox.getPlaces();
                 if (places.length === 0) {
                     return;
@@ -218,6 +220,7 @@
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
                     if (place.geometry && place.rating >= minRating) {
+                        cuisineSearch = true;
                         /*
                         new google.maps.Marker({
                             map: map,
@@ -226,9 +229,7 @@
                         });*/
                         createMarker(place, map);
                         bounds.extend(place.geometry.location);
-                    } /*else if (place.geometry == true) {
-                        Should we put something here if the place exists but is below the minRating?
-                    }*/
+                    }
                 });
                 map.fitBounds(bounds);
             });
@@ -258,16 +259,36 @@
 
             document.getElementById('set-rating').addEventListener('click', function() {
                 minRating = parseFloat(document.getElementById('min-rating').value);
-                //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 clearMarkers();
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+                if (cuisineSearch) {
+                    var places = searchBox.getPlaces();
+                    if (places.length === 0) {
+                        return;
+                    }
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function(place) {
+                        if (place.geometry && place.rating >= minRating) {
+                            cuisineSearch = true;
+                            /*
+                            new google.maps.Marker({
+                                map: map,
+                                title: place.name,
+                                position: place.geometry.location
+                            });*/
+                            createMarker(place, map);
+                            bounds.extend(place.geometry.location);
+                        }
+                    });
+                map.fitBounds(bounds);
+                } else {
+                    searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+                }
             });
 
 
             // Event listener for setting radius
             document.getElementById('set-radius').addEventListener('click', function() {
                 searchRadius = parseInt(document.getElementById('radius').value);
-                //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 clearMarkers();
                 searchNearbyRestaurants(userLocation); // Re-fetch restaurants
             });
@@ -275,7 +296,7 @@
 
         function searchNearbyRestaurants(location) {
             clearMarkers();
-
+            cuisineSearch = false;
             var request = {
                 location: location,
                 radius: searchRadius,  // Use the updated radius
