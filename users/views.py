@@ -128,16 +128,14 @@ def submit_review(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            id = data.get('restaurant')
+            place_id = data.get('restaurant')
             rating = data.get('rating')
             review_text = data.get('review')
 
             print(f"Received data: {data}")  # Log received data for debugging
 
-            restaurant = Restaurant.objects.get(id=restaurant_id)
-
             # Check if the user has already submitted a review for this restaurant
-            existing_review = Review.objects.filter(user=request.user, restaurant=restaurant).first()
+            existing_review = Review.objects.filter(user=request.user, place_id=place_id).first()
 
             if existing_review:
                 # Update the existing review
@@ -149,7 +147,7 @@ def submit_review(request):
                 # Create a new review
                 new_review = Review(
                     user=request.user,
-                    restaurant=restaurant,
+                    place_id=place_id,
                     rating=rating,
                     review_text=review_text,
                 )
