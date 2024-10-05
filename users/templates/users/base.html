@@ -457,7 +457,7 @@
         }
 
 
-        function submitReview(event, placeId, isUserLoggedIn, loginUrl) {
+        function submitReview(event, restaurantId, isUserLoggedIn, loginUrl) {
             event.preventDefault();
 
             if (!isUserLoggedIn) {
@@ -467,16 +467,18 @@
             }
 
             // If user is logged in, proceed with review submission
-            const rating = document.querySelector(`#review-form-${placeId} #rating`).value;
-            const reviewText = document.querySelector(`#review-form-${placeId} #review-text`).value;
+            const rating = document.querySelector(`#review-form-${restaurantId} #rating`).value;
+            const reviewText = document.querySelector(`#review-form-${restaurantId} #review-text`).value;
 
             if (rating && reviewText) {
                 // Prepare data to be sent to the server
                 const data = {
-                    restaurant: placeId,
+                    restaurant: restaurantId,
                     rating: rating,
                     review: reviewText,
                 };
+
+                console.log('Sending data:', JSON.stringify(data));
 
                 // Send the review data to the server via AJAX
                 fetch('/submit_review/', {
@@ -496,7 +498,7 @@
                 .then(data => {
                     alert(data.message);
                     // Clear the form after successful submission
-                    document.querySelector(`#review-form-${placeId}`).reset();
+                    document.querySelector(`#review-form-${restaurantId}`).reset();
                 })
                 .catch(error => {
                     console.error('There was a problem with the fetch operation:', error);
@@ -507,7 +509,6 @@
             }
         }
 
-        // Utility function to get CSRF token from cookies
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -523,6 +524,7 @@
             }
             return cookieValue;
         }
+
 
 
             // Add event listeners for "See more" links

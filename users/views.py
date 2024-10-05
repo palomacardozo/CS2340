@@ -157,7 +157,6 @@ def submit_review(request):
             return JsonResponse({'message': message}, status=201)
         except Exception as e:
             print(f"Error while submitting review: {e}")  # Log the error for debugging
-            console.log("Data being sent:", JSON.stringify(data));
             return JsonResponse({'error': str(e)}, status=400)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
