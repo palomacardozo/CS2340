@@ -123,37 +123,33 @@ def add_to_favorites(request, restaurant_id):
     return redirect('favorites')  # Redirect to the favorites page
 
 
-@csrf_exempt  # Temporarily disable CSRF for testing (remove after testing)
+@csrf_exempt
 @login_required(login_url='/login/')
 def submit_review(request):
     if request.method == 'POST':
         try:
-            # Parse JSON data from the request body
             data = json.loads(request.body)
-
-            # Extract relevant data
-            restaurant_id = data.get('restaurant')  # Ensure this matches your frontend
+            place_id = data.get('restaurant')
             rating = data.get('rating')
             review_text = data.get('review')
 
-            # Debugging output
-            print(f'Restaurant ID: {restaurant_id}, Rating: {rating}, Review: {review_text}')
-
-            # Create and save the review
+            # Save the review
             new_review = Review(
-                restaurant_id=restaurant_id,  # stored internally as restaurant_id
-                # user=request.user,  # if we wanted to associate the review with the logged-in user
+                user=request.user,  # Associate review with logged-in user
+                place_id=place_id,
                 rating=rating,
-                review_text=review_text
+                review_text=review_text,
             )
             new_review.save()
 
             return JsonResponse({'message': 'Review submitted successfully!'}, status=201)
-
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
-
     return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 
+@login_required
+def my_reviews(request):
+    user_reviews = Review.objects.filter(user=request.user)  # Fetch reviews created by the logged-in user
+    return render(request, 'my_reviews.html', {'reviews': user_reviews})
