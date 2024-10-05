@@ -128,14 +128,16 @@ def submit_review(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            place_id = data.get('restaurant')
+            id = data.get('restaurant')
             rating = data.get('rating')
             review_text = data.get('review')
 
             print(f"Received data: {data}")  # Log received data for debugging
 
+            restaurant = Restaurant.objects.get(id=restaurant_id)
+
             # Check if the user has already submitted a review for this restaurant
-            existing_review = Review.objects.filter(user=request.user, place_id=place_id).first()
+            existing_review = Review.objects.filter(user=request.user, restaurant=restaurant).first()
 
             if existing_review:
                 # Update the existing review
@@ -147,7 +149,7 @@ def submit_review(request):
                 # Create a new review
                 new_review = Review(
                     user=request.user,
-                    place_id=place_id,
+                    restaurant=restaurant,
                     rating=rating,
                     review_text=review_text,
                 )
@@ -169,5 +171,6 @@ def my_reviews(request):
 
 @login_required(login_url='/login/')
 def remove_review(request, pk):
-    review.objects.get(pk=pk).delete()
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
     return redirect('/my_reviews')

@@ -33,11 +33,23 @@ class Favorite(models.Model):
         return f"{self.user.username} - {self.restaurant.name}"
 
 
-class Review(models.Model):
-    restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE)  # Ensure this is the correct model
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    rating = models.IntegerField()
-    review_text = models.TextField()
+
+class Restaurant(models.Model):
+    name = models.CharField(max_length=255)
 
     def __str__(self):
-        return f'Review by {self.user} for {self.restaurant}'
+        return self.name
+
+
+class Review(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    place_id = models.CharField(max_length=255)
+    rating = models.FloatField(null=True, blank=True)
+    review_text = models.TextField()
+
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='reviews',
+                                   null=True)  # Allow null temporarily
+
+    def __str__(self):
+        return f"{self.user.username} - {self.place_id}"
