@@ -580,6 +580,30 @@
                 currentResults = containsKeywords(arr_reviews, italian);
                 cuisineType = "Italian Restaurant";
             }
+            if (containsKeywords(arr_reviews, brazilianRestaurantWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, brazilianRestaurantWords);
+                cuisineType = "Brazilian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, breakfastRestaurant) > currentResults){
+                currentResults = containsKeywords(arr_reviews, breakfastRestaurant);
+                cuisineType = "Breakfast Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, coffeeShopIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, coffeeShopIdentifierWords);
+                cuisineType = "Coffe Shop";
+            }
+            if (containsKeywords(arr_reviews, frenchRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, frenchRestaurantIdentifierWords);
+                cuisineType = "French Restaurant";
+            }
+            if (containsKeywords(arr_reviews, greekRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, greekRestaurantIdentifierWords);
+                cuisineType = "Greek Restaurant";
+            }
             if (containsKeywords(arr_reviews, american) > currentResults){
                 currentResults = containsKeywords(arr_reviews, american);
                 cuisineType = "American Restaurant";
@@ -600,9 +624,9 @@
                 currentResults = containsKeywords(arr_reviews, bakeryKeywords);
                 cuisineType = "Bakery"
             }
-            if (containsKeywords(arr_reviews, barKeywords) > currentResults) {
-                currentResults = containsKeywords(arr_reviews, barKeywords);
-                cuisineType = "Bar"
+            if (containsKeywords(arr_reviews, iceCreamShopIdentifierWords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, iceCreamShopIdentifierWords);
+                cuisineType = "Ice Cream Shop"
             }
             if (containsKeywords(arr_reviews, mediterranean) > currentResults) {
                 cuisineType = "Mediterranean Restaurant"
