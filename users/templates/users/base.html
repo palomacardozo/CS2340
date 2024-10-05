@@ -497,6 +497,27 @@
                 })
                 .then(data => {
                     alert(data.message);
+
+                    // Try to find the review list
+                    const reviewList = document.querySelector('.review-list');
+                    if (!reviewList) {
+                        console.error('Review list not found!');
+                        return; // Exit if the review list doesn't exist
+                    }
+
+                    // Create a new review card
+                    const reviewCard = document.createElement('li');
+                    reviewCard.className = 'review-card';
+                    reviewCard.innerHTML = `
+                        <h3>${data.restaurantName}</h3>
+                        <p><strong>Rating:</strong> ${data.rating} / 5</p>
+                        <p><strong>Review:</strong> ${data.reviewText}</p>
+                        <a href="#" onclick="removeReview(${data.reviewId}); return false;">Remove Review</a>
+                    `;
+
+                    // Append the new review card to the review list
+                    reviewList.appendChild(reviewCard);
+
                     // Clear the form after successful submission
                     document.querySelector(`#review-form-${restaurantId}`).reset();
                 })
@@ -508,6 +529,8 @@
                 alert('Please provide a rating and a review before submitting.');
             }
         }
+
+
 
         function getCookie(name) {
             let cookieValue = null;

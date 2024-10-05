@@ -3,7 +3,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,31 +10,80 @@
     <title>My Reviews</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <style>
+        /* Ensure the body and html cover full height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: #f3f4f6; /* Set your desired background color */
+            font-family: inherit; /* Keeps the original font */
+        }
+
+        /* Flexbox layout for the main container */
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100%; /* Ensure it takes at least the full height */
+        }
+
+        /* Main content area */
+        .content {
+            flex: 1; /* Allow this area to grow and take available space */
+            display: flex;
+            justify-content: center; /* Center the reviews horizontally */
+            align-items: flex-start; /* Align items at the start vertically */
+            padding: 20px; /* Add some padding for space */
+        }
+
+        .review-list-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center; /* Centering the review cards */
+            margin: 20px 0;
+            width: 100%; /* Full width for the list */
+        }
+
         .review-card {
-            background-color: #f9f9f9;
-            border: 1px solid #e1e1e1;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 10px 0;
-            transition: box-shadow 0.3s;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 15px;
+            width: 300px; /* Set a fixed width for the cards */
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: left; /* Left-align text inside the card */
         }
 
         .review-card:hover {
+            transform: translateY(-5px);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .review-card h3 {
             margin: 0;
-            color: black;
+            color: #333;
         }
 
         .review-card p {
-            margin: 5px 0;
-            color: black;
+            margin: 10px 0;
+            color: #555;
+        }
+
+        .review-card strong {
+            color: #000;
+        }
+
+        .stars {
+            color: #FFD700; /* Gold color for stars */
+            font-size: 18px; /* Increase star size for visibility */
         }
 
         a {
             color: dodgerblue;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
 
         .no-reviews {
@@ -44,10 +92,65 @@
             font-size: 24px;
             color: #777;
         }
+
+        .full-review {
+            display: none; /* Hide full review by default */
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
     </style>
+    <script>
+        const maxReviewLength = 200; // Set your character limit here
+
+        function generateStars(rating) {
+            if (!rating) return ''; // Return empty if no rating
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < rating) {
+                    stars += '★'; // Full star
+                } else {
+                    stars += '☆'; // Empty star
+                }
+            }
+            return `<span class="stars">${stars}</span>`; // Wrap stars in a span with class
+        }
+
+        // Function to display stars and truncate reviews
+        function displayReviews() {
+            const reviews = document.querySelectorAll('.review-card');
+            reviews.forEach(review => {
+                const rating = parseFloat(review.dataset.rating); // Get the rating from data attribute
+                const reviewText = review.querySelector('.review-text').textContent.trim(); // Get the review text
+                const isLongReview = reviewText.length > maxReviewLength;
+                const truncatedReview = isLongReview ? reviewText.substring(0, maxReviewLength) + '...' : reviewText;
+
+                // Update review text and stars
+                review.querySelector('.stars-container').innerHTML = generateStars(rating); // Set stars in the container
+                review.querySelector('.review-text').textContent = truncatedReview; // Set truncated review text
+
+                // Add "See more" link if necessary
+                if (isLongReview) {
+                    const seeMoreLink = document.createElement('a');
+                    seeMoreLink.href = "#";
+                    seeMoreLink.className = "see-more";
+                    seeMoreLink.textContent = "See more";
+                    seeMoreLink.onclick = (e) => {
+                        e.preventDefault(); // Prevent the default link behavior
+                        const fullReview = review.querySelector('.full-review');
+                        fullReview.style.display = 'block'; // Show full review
+                        seeMoreLink.style.display = 'none'; // Hide "See more" link
+                    };
+                    review.appendChild(seeMoreLink); // Add the "See more" link
+                }
+            });
+        }
+
+        window.onload = displayReviews; // Call displayReviews when the window loads
+    </script>
 </head>
 <body>
-    <div>
+    <div class="container"> <!-- Main container for flex layout -->
         <div class="header-image">
             <div class="navbar">
                 <a href="{% url 'home' %}">Home</a>
@@ -75,10 +178,13 @@
                         <h3>You have {{ reviews|length }} review(s):</h3>
                         <ul class="review-list">
                             {% for review in reviews %}
-                                <li class="review-card">
-                                    <h3>{{ review.restaurant.name }}</h3>
-                                    <<p><strong>Rating:</strong> {{ review.rating|floatformat:0 }} / 5</p>
-                                    <p><strong>Review:</strong> {{ review.review_text }}</p>
+                                <li class="review-card" data-rating="{{ review.rating|floatformat:0 }}">
+                                    <h3>{{ review.restaurant.name }}</h3> <!-- Restaurant name displayed at the top -->
+                                    <div class="stars-container"></div> <!-- Stars will be inserted here -->
+                                    <p><strong>Rating:</strong> {{ review.rating|floatformat:0 }} / 5</p> <!-- Show the numerical rating -->
+                                    <p><strong>Review:</strong></p>
+                                    <p class="review-text">{{ review.review_text }}</p> <!-- Original review text -->
+                                    <div class="full-review"><p>"{{ review.review_text }}"</p></div> <!-- Full review hidden by default -->
                                     <a href="{% url 'remove_review' review.pk %}">Remove Review</a>
                                 </li>
                             {% endfor %}
@@ -94,6 +200,5 @@
             {% endif %}
         </div>
     </div>
-{% endblock %}
 </body>
 </html>
