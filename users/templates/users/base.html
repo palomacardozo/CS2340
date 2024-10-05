@@ -477,25 +477,25 @@
                 }
             const arr_reviews = review_text.split(" ").map(word => word.toLowerCase());
             const italian = new Set([
-            "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "bistro", "enoteca",
-            "taverna", "gusto", "sapori", "pomodoro", "mamma", "nonna", "amici", "roma", "napoli", "toscana",
-            "vino", "dolce", "al forno", "fresco", "bella", "buona", "vespa", "cantina", "sole", "margherita",
-            "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco", "verde",
-            "fiorentina", "tartufo", "panini"
-            ]);
+                "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "enoteca",
+                "taverna", "gusto", "sapori", "pomodoro", "nonna", "amici", "roma", "napoli", "toscana",
+                "vino", "dolce", "al forno", "fresco", "bella", "buona", "vespa", "sole",
+                "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco",
+                "fiorentina", "tartufo", "panini", "spaghetti", "penne", "italy", "italian"
+                ]);
 
             const mexican = new Set([
                 "taco", "burrito", "quesadilla", "enchilada", "guacamole", "salsa", "fajita", "tortilla", "nachos",
                 "chimichanga", "tamale", "chorizo", "carnitas", "carne asada", "pollo", "mole", "pozole",
-                "tostada", "sopes", "elote", "flan", "horchata", "margarita", "ceviche", "pico de gallo",
+                "tostada", "sopes", "elote", "flan", "horchata", "pico de gallo",
                 "al pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos rancheros",
                 "refried beans", "frijoles", "arroz", "tres leches", "empanada", "churros", "taqueria",
                 "sopaipilla", "agua fresca", "sangria", "tequila", "mezcal", "chipotle", "poblano",
                 "chile relleno", "jalapeño", "habanero", "serrano", "carnitas", "birria", "pico",
-                "sopa", "ranchero", "adobo", "tinga", "verde", "salsa verde", "salsa roja", "chimichurri",
+                "sopa", "ranchero", "adobo", "tinga", "salsa verde", "salsa roja", "chimichurri",
                 "nopal", "mexicana", "cochinita pibil", "pico de gallo", "tajin", "flautas", "tostadas",
                 "queso", "queso fresco", "crema", "street corn", "baja", "molcajete", "tamales",
-                "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "tacos al carbon"
+                "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "tacos al carbon", "mexican", "mexico"
             ]);
 
             const chinese = new Set([
@@ -509,44 +509,27 @@
 
             const mediterranean = new Set([
                 "hummus", "falafel", "pita", "shawarma", "kebab", "gyro", "tzatziki", "tabbouleh", "baba ganoush",
-                "dolma", "souvlaki", "baklava", "spanakopita", "moussaka", "tahini", "feta", "olives",
-                "lamb", "chicken shawarma", "bulgur", "couscous", "mezze", "halloumi", "fattoush", "za'atar",
-                "harissa", "sumac", "basmati", "rice pilaf", "mint", "parsley", "grape leaves", "lebneh",
-                "yogurt", "garlic sauce", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
-                "briam", "brioche", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar",
-                "octopus", "calamari", "taramasalata", "swordfish", "olive oil", "fava beans", "kalamata olives",
-                "pomegranate", "lemon", "cucumber", "tomato", "eggplant", "rose water", "sesame", "baklawa",
-                "loukoumades", "orzo", "tarator", "lentil soup", "grilled vegetables", "zucchini", "capers",
-                "sardines", "figs", "chickpeas", "herbs", "spices", "turkish coffee", "greek salad",
-                "cumin", "cardamom", "coriander", "dukkah", "pistachio", "dates", "baba ghanoush", "saffron",
-                "grilled fish", "fennel", "saffron", "sesame seeds", "rosemary", "thyme"
+                "dolma", "souvlaki", "baklava", "spanakopita", "moussaka", "tahini", "feta", "olives", "chicken shawarma", "bulgur", "couscous", "mezze", "halloumi", "fattoush", "za'atar",
+                "harissa", "sumac", "rice pilaf", "grape leaves", "lebneh", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
+                "briam", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar", "taramasalata", "fava beans", "kalamata olives",
+                "pomegranate", "baklawa", "loukoumades", "orzo", "tarator", "lentil soup", "sardines", "figs", "turkish coffee", "greek salad",
+                 "dukkah", "baba ghanoush", "mediterranean"
             ]);
 
             const american = new Set([
-                "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse",
+                "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse", "american",
                 "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "brewhouse",
                 "hot dog", "cheeseburger", "griddle", "brisket", "southern",
                 "fried chicken", "ribs", "buffalo", "american", "smoke", "patty", "cheddar",
                 "all-american", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
-                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "deli", "meatloaf", "pancake",
-                "sandwich", "milkshake", "roadside", "grub", "blue plate", "brewery"
-            ]);
-
-            const fastFood = new Set([
-                "burger", "fries", "pizza", "chicken", "sandwich", "sub", "taco", "wrap", "wings", "hot dog",
-                "bbq", "grill", "shack", "deli", "drive-thru", "fried", "burrito", "donuts", "shake",
-                "ice cream", "fast", "express", "quick", "combo", "meal", "value", "snack", "wing", "cheeseburger",
-                "nuggets", "soda", "sliders", "bites", "box", "tenders", "bucket", "to go", "chick", "patty",
-                "crispy", "cheddar", "double", "king", "subway", "waffle", "mc", "junior", "loaded", "drive in",
-                "quick bites", "takeaway", "fresh", "deluxe", "supreme", "ultimate"
+                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "meatloaf", "milkshake", "roadside", "grub", "blue plate", "brewery"
             ]);
 
             const korean = new Set([
-                "korean bbq", "bulgogi", "kimchi", "korean", "bibimbap", "galbi", "samgyupsal", "jjigae",
-                "hot pot", "tteokbokki", "kimbap", "ssam", "jajangmyeon", "dak", "sundubu", "manduu",
+                "korean bbq", "bulgogi", "kimchi", "korean", "bibimbap", "galbi", "samgyupsal", "jjigae", "tteokbokki", "kimbap", "ssam", "jajangmyeon", "dak", "sundubu", "manduu",
                 "gogi", "chimaek", "banchan", "ssam", "seoul", "gangnam", "soju", "kimchi stew", "hoddeok",
                 "yukgaejang", "gopchang", "jumak", "jeon", "kkakdugi", "pajeon", "budae jjigae",
-                "japchae", "hanjeongsik", "tteok", "kalbi", "sundae", "makgeolli", "sikhye", "bingsu",
+                "japchae", "hanjeongsik", "tteok", "kalbi", "makgeolli", "sikhye", "bingsu",
                 "chogajib", "chimaek", "doenjang", "bossam", "naengmyeon", "baekban", "karaage"
             ]);
 
@@ -554,26 +537,18 @@
                 "bread", "croissant", "danish", "pastry", "muffin", "cookie", "brownie",
                 "cupcake", "doughnut", "tart", "biscotti", "cake", "pudding", "eclair",
                 "scone", "macaron", "cheesecake", "baguette", "focaccia", "pita", "brioche",
-
-                "fresh", "sweet", "savory", "chocolate", "vanilla", "almond", "cinnamon",
-                "lemon", "cream cheese", "buttercream", "nutella", "fruit", "filling",
-                "glaze", "caramel", "icing", "whipped cream", "sprinkles", "bakery", "treat"
+                "cream cheese", "buttercream", "nutella", "caramel", "icing", "whipped cream", "sprinkles", "bakery", "treat"
             ]);
 
             const barKeywords = new Set([
                 "cocktail", "beer", "whiskey", "vodka", "gin", "rum", "tequila", "brandy",
                 "shots", "liquor", "mixology", "draft", "pint", "margarita", "mojito",
-                "martini", "highball", "sour", "lager", "ale", "stout", "IPA", "sour",
-
-                "happy hour", "drink", "menu", "special", "signature", "refreshing",
-                "smooth", "strong", "bitter", "sweet", "spicy", "fruity", "fizzy",
-
-                "local", "craft", "brewery", "distillery", "brewpub", "specialty",
-                "house-made", "tasting"
+                "martini", "highball", "lager", "ale", "stout", "IPA",
+                "happy hour", "drink", "fizzy", "craft", "brewery", "distillery", "brewpub","bartender", "alcohol", "proof", "bar"
             ]);
             const brazilianRestaurantWords = new Set(["feijoada", "pão de queijo", "churrasco", "caipirinha", "brigadeiro", "farofa", "coxinha",
                         "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "bossa nova", "samba", "cachaça",
-                        "feira", "comida mineira", "quindim", "baião de dois", "bolinho de bacalhau", "misto quente", "pastel"]);
+                        "feira", "comida mineira", "quindim", "baião de dois", "bolinho de bacalhau", "misto quente", "pastel", "brazilian"]);
 
             const breakfastRestaurant = new Set(["pancakes", "waffles", "eggs benedict", "scrambled eggs", "omelette", "bacon", "sausage", "hash browns", "toast", "bagel", "coffee",
                   "breakfast burrito", "french toast", "biscuits", "gravy", "mimosa", "orange juice", "morning", "brunch", "granola", "cereal",
@@ -581,22 +556,22 @@
             const coffeeShopIdentifierWords = new Set(["latte", "espresso", "cappuccino", "americano", "macchiato",
                 "cold brew", "mocha", "drip coffee", "flat white", "pour-over", "barista", "chai", "latte art",
                 "iced coffee", "cortado", "nitro", "brewed", "roast", "coffee beans", "single origin", "decaf",
-                "frappuccino", "croissant", "muffin", "pastries", "grind", "brew", "café", "cozy", "third wave coffee",
-                "specialty coffee"]);
+                "frappuccino", "croissant", "muffin", "pastries", "grind", "brew", "third wave coffee",
+                "specialty coffee", "coffee"]);
             const frenchRestaurantIdentifierWords = new Set(["escargot", "croissant", "baguette",
                 "coq au vin", "bouillabaisse", "ratatouille", "crepe", "foie gras", "duck confit", "tarte tatin", "brie",
                 "camembert", "chateaubriand", "moules", "frites", "quiche", "crème brûlée", "bordeaux",
                 "champagne", "provence", "fromage", "paté", "cassoulet", "rouille", "beurre blanc",
                 "french onion soup", "tarte", "soufflé", "macarons", "pain au chocolat"]);
             const greekRestaurantIdentifierWords = new Set(["gyro", "tzatziki", "souvlaki", "moussaka",
-                "spanakopita", "dolmades", "baklava", "feta", "pita", "olives", "saganaki", "halloumi",
+                "spanakopita", "dolmades", "baklava", "feta", "pita", "saganaki", "halloumi",
                 "hummus", "lamb", "grilled octopus", "ouzo", "tzatziki sauce", "kalamata", "meze", "keftedes",
-                "avgolemono", "stifado", "greek salad", "pastitsio", "loukoumades", "yogurt", "orzo", "filo pastry",
+                "avgolemono", "stifado", "greek salad", "pastitsio", "loukoumades", "orzo", "filo pastry",
                 "phyllo", "metaxa"]);
             const iceCreamShopIdentifierWords = new Set(["gelato", "sundae", "scoop", "waffle cone",
                 "milkshake", "soft serve", "sorbet", "frozen yogurt", "custard", "ice cream sandwich",
-                "sprinkles", "hot fudge", "banana split", "cones", "toppings", "whipped cream", "brownie sundae",
-                "chocolate chip", "vanilla", "strawberry", "cookie dough", "float", "flavors", "dairy-free",
+                "sprinkles", "hot fudge", "banana split", "cones", "whipped cream", "brownie sundae",
+                "chocolate chip", "cookie dough", "float", "flavors", "dairy-free",
                 "vegan ice cream", "ice cream cake", "marshmallow", "caramel drizzle"]);
             var cuisineType;
             var currentResults = 0;
