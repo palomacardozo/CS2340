@@ -650,8 +650,30 @@
                 cuisineType = "Ice Cream Shop"
             }
             if (containsKeywords(arr_reviews, mediterranean) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, mediterranean);
                 cuisineType = "Mediterranean Restaurant"
             }
+            if (containsKeywords(arr_reviews, barKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, barKeywords);
+                cuisineType = "Bar"
+            }
+            if (containsKeywords(arr_reviews, indianRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, indianRestaurantKeywords);
+                cuisineType = "Indian Restaurant"
+            }
+            if (containsKeywords(arr_reviews, japaneseRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, japaneseRestaurantKeywords);
+                cuisineType = "Japanese Restaurant"
+            }
+            if (containsKeywords(arr_reviews, seafoodRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, seafoodRestaurantKeywords);
+                cuisineType = "Seafood Restaurant"
+            }
+            if (containsKeywords(arr_reviews, thaiRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, thaiRestaurantKeywords);
+                cuisineType = "Thai Restaurant"
+            }
+
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
                 let reviewText = review.text;
