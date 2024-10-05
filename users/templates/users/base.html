@@ -564,6 +564,27 @@
                 "sprinkles", "hot fudge", "banana split", "cones", "whipped cream", "brownie sundae",
                 "chocolate chip", "cookie dough", "float", "flavors", "dairy-free",
                 "vegan ice cream", "ice cream cake", "marshmallow", "caramel drizzle"]);
+            const indianRestaurantKeywords = new Set(["tikka", "masala", "indian", "india", "biryani",
+                "naan", "samosa", "paneer", "chutney", "vindaloo", "dal", "roti", "pulao", "thali", "chaat", "aloo",
+                "butter chicken", "tandoori", "onion bhaji", "mango lassi", "tamarind",
+                "bhindi", "ghee", "chole", "rogan josh", "basmati"
+            ]);
+            const japaneseRestaurantKeywords = new Set([
+                "sushi", "sashimi", "ramen", "tempura", "miso", "yakitori", "edamame", "nigiri", "wasabi",
+                "udon", "bento", "poke", "donburi", "katsu", "gyoza", "soba", "shoyu", "tamago", "maki", "matcha",
+                "narezushi", "chirashi", "tsukemono", "yaki", "ponzu", "dashi"
+            ]);
+
+            const seafoodRestaurantKeywords = new Set([
+                "shrimp", "crab", "lobster", "clams", "oysters", "mussels", "salmon", "tuna", "fish", "scallops", "ceviche", "chowder",
+                "catch of the day", "seafood platter", "seafood", "calamari", "bay shrimp",
+                "prawns", "anchovies", "tartare", "sashimi", "lemon butter", "scampi"
+            ]);
+            const thaiRestaurantKeywords = new Set([
+                "pad", "thai", "tom", "yum", "massaman", "satay", "sticky", "coconut", "lemongrass", "papaya",
+                "drunken", "tamarind", "kaffir", "mango", "sriracha", "stir-fry", "bamee", "peanut"
+            ]);
+
             var cuisineType;
             if (containsKeywords(arr_reviews, italian) === true){
                 cuisineType = "Italian Restaurant";}
