@@ -471,15 +471,59 @@
             const reviewText = document.querySelector(`#review-form-${placeId} #review-text`).value;
 
             if (rating && reviewText) {
-                // Handle form submission logic here (e.g., send data to the server)
-                console.log(`Review for place ID ${placeId}: Rating ${rating}, Review: ${reviewText}`);
+                // Prepare data to be sent to the server
+                const data = {
+                    restaurant: placeId,
+                    rating: rating,
+                    review: reviewText,
+                };
 
-                // Clear the form after submission
-                document.querySelector(`#review-form-${placeId}`).reset();
+                // Send the review data to the server via AJAX
+                fetch('/submit_review/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token for security
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(data.message);
+                    // Clear the form after successful submission
+                    document.querySelector(`#review-form-${placeId}`).reset();
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    alert('An error occurred while submitting your review. Please try again.');
+                });
             } else {
                 alert('Please provide a rating and a review before submitting.');
             }
         }
+
+        // Utility function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
 
             // Add event listeners for "See more" links
             const seeMoreLinks = detailsDiv.getElementsByClassName('see-more');

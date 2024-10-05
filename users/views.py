@@ -123,7 +123,6 @@ def add_to_favorites(request, restaurant_id):
     return redirect('favorites')  # Redirect to the favorites page
 
 
-@csrf_exempt
 @login_required(login_url='/login/')
 def submit_review(request):
     if request.method == 'POST':
@@ -133,23 +132,43 @@ def submit_review(request):
             rating = data.get('rating')
             review_text = data.get('review')
 
-            # Save the review
-            new_review = Review(
-                user=request.user,  # Associate review with logged-in user
-                place_id=place_id,
-                rating=rating,
-                review_text=review_text,
-            )
-            new_review.save()
+            print(f"Received data: {data}")  # Log received data for debugging
 
-            return JsonResponse({'message': 'Review submitted successfully!'}, status=201)
+            # Check if the user has already submitted a review for this restaurant
+            existing_review = Review.objects.filter(user=request.user, place_id=place_id).first()
+
+            if existing_review:
+                # Update the existing review
+                existing_review.rating = rating
+                existing_review.review_text = review_text
+                existing_review.save()
+                message = 'Review updated successfully!'
+            else:
+                # Create a new review
+                new_review = Review(
+                    user=request.user,
+                    place_id=place_id,
+                    rating=rating,
+                    review_text=review_text,
+                )
+                new_review.save()
+                message = 'Review submitted successfully!'
+
+            return JsonResponse({'message': message}, status=201)
         except Exception as e:
+            print(f"Error while submitting review: {e}")  # Log the error for debugging
+            console.log("Data being sent:", JSON.stringify(data));
             return JsonResponse({'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 @login_required
 def my_reviews(request):
     user_reviews = Review.objects.filter(user=request.user)  # Fetch reviews created by the logged-in user
-    return render(request, 'my_reviews.html', {'reviews': user_reviews})
+    return render(request, 'users/my_reviews.html', {'reviews': user_reviews})
+
+@login_required(login_url='/login/')
+def remove_review(request, pk):
+    review.objects.get(pk=pk).delete()
+    return redirect('/my_reviews')
