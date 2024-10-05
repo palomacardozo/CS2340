@@ -492,10 +492,10 @@
             const chinese = new Set([
                 "dim sum", "wok", "dragon", "lotus", "jade", "peking", "szechuan", "canton", "mandarin",
                 "hunan", "shanghai", "bamboo", "phoenix", "golden", "panda", "garden", "palace", "dynasty",
-                "emperor", "lucky", "fortune", "noodle", "dumpling", "tea house", "sichuan", "chopsticks",
+                "emperor", "lucky", "fortune", "dumpling", "tea house", "sichuan", "chopsticks",
                 "great wall", "lantern", "china", "beijing", "ming", "yuan", "tiger", "zen", "pearl",
-                "oriental", "pagoda", "rice", "hot pot", "wonton", "kung pao", "soy", "sesame", "buddha",
-                "chow mein", "lo mein", "fried rice"
+                "oriental", "pagoda", "hot pot", "wonton", "kung pao", "soy", "buddha",
+                "chow mein", "lo mein", "fried rice", "chinese", "bao",
             ]);
 
             const mediterranean = new Set([
@@ -514,13 +514,13 @@
             ]);
 
             const american = new Set([
-                "grill", "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse",
-                "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "pub", "bar", "brewhouse",
-                "hot dog", "cheeseburger", "griddle", "shack", "joint", "brisket", "southern",
+                "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse",
+                "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "brewhouse",
+                "hot dog", "cheeseburger", "griddle", "brisket", "southern",
                 "fried chicken", "ribs", "buffalo", "american", "smoke", "patty", "cheddar",
-                "all-american", "route", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
-                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "deli", "meatloaf",
-                "café", "pancake", "sandwich", "milkshake", "roadside", "grub", "blue plate", "brewery"
+                "all-american", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
+                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "deli", "meatloaf", "pancake",
+                "sandwich", "milkshake", "roadside", "grub", "blue plate", "brewery"
             ]);
 
             const fastFood = new Set([
@@ -562,19 +562,46 @@
                 "local", "craft", "brewery", "distillery", "brewpub", "specialty",
                 "house-made", "tasting"
             ]);
+            const brazilianRestaurantWords = new Set(["feijoada", "pão de queijo", "churrasco", "caipirinha", "brigadeiro", "farofa", "coxinha",
+                        "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "bossa nova", "samba", "cachaça",
+                        "feira", "comida mineira", "quindim", "baião de dois", "bolinho de bacalhau", "misto quente", "pastel"]);
 
+            const breakfastRestaurant = new Set(["pancakes", "waffles", "eggs benedict", "scrambled eggs", "omelette", "bacon", "sausage", "hash browns", "toast", "bagel", "coffee",
+                  "breakfast burrito", "french toast", "biscuits", "gravy", "mimosa", "orange juice", "morning", "brunch", "granola", "cereal",
+                  "breakfast sandwich", "smoothie", "avocado toast", "eggs", "morning special", "breakfast platter", "fluffy", "diner"]);
+            const coffeeShopIdentifierWords = new Set(["latte", "espresso", "cappuccino", "americano", "macchiato",
+                "cold brew", "mocha", "drip coffee", "flat white", "pour-over", "barista", "chai", "latte art",
+                "iced coffee", "cortado", "nitro", "brewed", "roast", "coffee beans", "single origin", "decaf",
+                "frappuccino", "croissant", "muffin", "pastries", "grind", "brew", "café", "cozy", "third wave coffee",
+                "specialty coffee"]);
+            const frenchRestaurantIdentifierWords = new Set(["escargot", "croissant", "baguette",
+                "coq au vin", "bouillabaisse", "ratatouille", "crepe", "foie gras", "duck confit", "tarte tatin", "brie",
+                "camembert", "chateaubriand", "moules", "frites", "quiche", "crème brûlée", "bordeaux",
+                "champagne", "provence", "fromage", "paté", "cassoulet", "rouille", "beurre blanc",
+                "french onion soup", "tarte", "soufflé", "macarons", "pain au chocolat"]);
+            const greekRestaurantIdentifierWords = new Set(["gyro", "tzatziki", "souvlaki", "moussaka",
+                "spanakopita", "dolmades", "baklava", "feta", "pita", "olives", "saganaki", "halloumi",
+                "hummus", "lamb", "grilled octopus", "ouzo", "tzatziki sauce", "kalamata", "meze", "keftedes",
+                "avgolemono", "stifado", "greek salad", "pastitsio", "loukoumades", "yogurt", "orzo", "filo pastry",
+                "phyllo", "metaxa"]);
+            const iceCreamShopIdentifierWords = new Set(["gelato", "sundae", "scoop", "waffle cone",
+                "milkshake", "soft serve", "sorbet", "frozen yogurt", "custard", "ice cream sandwich",
+                "sprinkles", "hot fudge", "banana split", "cones", "toppings", "whipped cream", "brownie sundae",
+                "chocolate chip", "vanilla", "strawberry", "cookie dough", "float", "flavors", "dairy-free",
+                "vegan ice cream", "ice cream cake", "marshmallow", "caramel drizzle"]);
             var cuisineType;
             if (containsKeywords(arr_reviews, italian) === true){
                 cuisineType = "Italian Restaurant";}
-             else if (containsKeywords(arr_reviews, american) === true){
-                cuisineType = "American Restaurant";}
+            else if (containsKeywords(arr_reviews, mexican)){
+                cuisineType = "Mexican Restaurant"
+            }
+            else if (containsKeywords(arr_reviews, brazilianRestaurantWords)){
+                cuisineType = "Brazilian Restaurant"
+            }
             else if (containsKeywords(arr_reviews, chinese)){
                 cuisineType = "Chinese Restaurant";}
             else if (containsKeywords(arr_reviews, korean)){
                 cuisineType = "Korean Restaurant";}
-            else if (containsKeywords(arr_reviews, mexican)){
-                cuisineType = "Mexican Restaurant"
-            }
             else if (containsKeywords(arr_reviews, bakeryKeywords)) {
                 cuisineType = "Bakery"
             }
@@ -584,6 +611,11 @@
             else if (containsKeywords(arr_reviews, mediterranean)) {
                 cuisineType = "Mediterranean Restaurant"
             }
+            else if(containsKeywords(arr_reviews, breakfastRestaurant)){
+                cuisineType = "Breakfast Restaurant"
+            }
+            else if (containsKeywords(arr_reviews, american) === true){
+                cuisineType = "American Restaurant";}
             else if (containsKeywords(arr_reviews, fastFood)){
                 cuisineType = "Fast Food Restaurant";}
             else {
