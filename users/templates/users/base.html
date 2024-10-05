@@ -416,8 +416,16 @@
         }
         // Function to check if any keywords from the set are in the array
         function containsKeywords(arr, keywordSet) {
-            // Use the some() method to check if any element in the array exists in the Set
-            return arr.some(item => keywordSet.has(item));
+            let count = 0;
+            console.log(keywordSet);
+            for (const word of arr) {
+                if (keywordSet.has(word)) {
+                    console.log(word);
+                    count++;
+                }
+            }
+            console.log(count);
+            return count;
         }
 
         function getPlaceDetails(placeId) {
@@ -564,30 +572,43 @@
             ]);
 
             var cuisineType;
-            if (containsKeywords(arr_reviews, italian) === true){
-                cuisineType = "Italian Restaurant";}
-             else if (containsKeywords(arr_reviews, american) === true){
-                cuisineType = "American Restaurant";}
-            else if (containsKeywords(arr_reviews, chinese)){
-                cuisineType = "Chinese Restaurant";}
-            else if (containsKeywords(arr_reviews, korean)){
-                cuisineType = "Korean Restaurant";}
-            else if (containsKeywords(arr_reviews, mexican)){
+            var currentResults = 0;
+            cuisineType = "Restaurant";
+            if (containsKeywords(arr_reviews, italian) > currentResults){
+                currentResults = containsKeywords(arr_reviews, italian);
+                cuisineType = "Italian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, chinese) > currentResults){
+                currentResults = containsKeywords(arr_reviews, chinese);
+                cuisineType = "Chinese Restaurant";
+            }
+            if (containsKeywords(arr_reviews, korean) > currentResults){
+                currentResults = containsKeywords(arr_reviews, korean);
+                cuisineType = "Korean Restaurant";
+            }
+            if (containsKeywords(arr_reviews, mexican) > currentResults){
+                currentResults = containsKeywords(arr_reviews, mexican);
                 cuisineType = "Mexican Restaurant"
             }
-            else if (containsKeywords(arr_reviews, bakeryKeywords)) {
+            if (containsKeywords(arr_reviews, bakeryKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, bakeryKeywords);
                 cuisineType = "Bakery"
             }
-            else if (containsKeywords(arr_reviews, barKeywords)) {
+            if (containsKeywords(arr_reviews, barKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, barKeywords);
                 cuisineType = "Bar"
             }
-            else if (containsKeywords(arr_reviews, mediterranean)) {
+            if (containsKeywords(arr_reviews, mediterranean) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, mediterranean);
                 cuisineType = "Mediterranean Restaurant"
             }
-            else if (containsKeywords(arr_reviews, fastFood)){
-                cuisineType = "Fast Food Restaurant";}
-            else {
-                cuisineType = "Restaurant";
+            if (containsKeywords(arr_reviews, fastFood) > currentResults){
+                currentResults = containsKeywords(arr_reviews, fastFood);
+                cuisineType = "Fast Food Restaurant";
             }
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
