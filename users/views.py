@@ -11,6 +11,43 @@ from django.conf import settings
 import json
 from django.contrib.auth import get_user_model
 from users.models import Favorite
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+
+
+@csrf_exempt  # Use CSRF token for POST requests
+def send_reset_email(request):
+    if request.method == "POST":
+        email = request.POST['email']
+
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(email=email)
+            subject = "Password Reset Requested"
+            email_template_name = "password_reset_email.html"
+            context = {
+                "email": user.email,
+                "domain": request.get_host(),
+                "site_name": "Your Site Name",
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "token": default_token_generator.make_token(user),
+                "protocol": 'http',
+            }
+            email = render_to_string(email_template_name, context)
+            send_mail(subject, email, 'admin@yourdomain.com', [user.email], fail_silently=False)
+            return JsonResponse({"message": "Password reset email sent."})
+        except User.DoesNotExist:
+            return JsonResponse({"error": "User with this email does not exist."}, status=400)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request."}, status=400)
 
 def signup(request):
     if request.method == 'POST':

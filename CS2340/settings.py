@@ -137,3 +137,12 @@ GOOGLE_API_KEY = 'AIzaSyDtUL74Sdloq7RMtzi7Qvcgzstf79Cnons'
 
 # Redirect after logout
 LOGOUT_REDIRECT_URL = 'home'
+
+#EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # e.g., 'smtp.gmail.com' for Gmail
+EMAIL_PORT = 587  # or 465 for SSL
+EMAIL_USE_TLS = True  # Use True for port 587, False for 465
+EMAIL_HOST_USER = 'foodfinder2340@gmail.com'  # Your email address
+EMAIL_HOST_PASSWORD = 'atlantafoodfinder'  # Your email password
+DEFAULT_FROM_EMAIL = 'foodfinder2340@gmail.com'

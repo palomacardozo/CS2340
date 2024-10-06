@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.urls import include, path
 from users import views
 from django.contrib.auth import views as auth_views
+from users.views import send_reset_email
 
 urlpatterns = [
+    path('send-reset-email/', send_reset_email, name='send_reset_email'),
     path('admin/', admin.site.urls),
     path("SignUp/", views.signup, name="signup"),
     path('login/', views.login_view, name='login'),
