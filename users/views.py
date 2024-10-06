@@ -134,6 +134,18 @@ def submit_review(request):
 
             print(f"Received data: {data}")  # Log received data for debugging
 
+            place = get_place_details(place_id)
+            # Check if the location already exists in the Locations model
+            location, location_created = Locations.objects.get_or_create(
+                place_id=place_id,
+                defaults={
+                    'name': place['result']['name'],
+                    'address': place['result']['formatted_address'],
+                    'lat': place['result']['geometry']['location']['lat'],
+                    'lng': place['result']['geometry']['location']['lng'],
+                }
+            )
+
             # Check if the user has already submitted a review for this restaurant
             existing_review = Review.objects.filter(user=request.user, place_id=place_id).first()
 
@@ -150,6 +162,7 @@ def submit_review(request):
                     place_id=place_id,
                     rating=rating,
                     review_text=review_text,
+                    restaurant=location,
                 )
                 new_review.save()
                 message = 'Review submitted successfully!'
