@@ -131,7 +131,7 @@
 </div>
 
 <div class="search-area">
-    <input id="search-box" type="text" placeholder="Search for restaurants">
+    <input id="search-box" type="text" placeholder="Search for restaurant or a cuisine">
     <input id="location-search" type="text" placeholder="Enter a location">
     <button id="location-submit">Search</button>
 </div>
@@ -140,11 +140,12 @@
          <label for="radius">Select search radius:</label>
         <select id="radius">
             <option value="500">0.5 km</option>
+            <option value="750">0.75 km</option>
             <option value="1000" selected>1 km</option>
+            <option value="2000">2 km</option>
+            <option value="3000">3 km</option>
+            <option value="4000">4 km</option>
             <option value="5000">5 km</option>
-            <option value="10000">10 km</option>
-            <option value="20000">20 km</option>
-            <option value="50000">50 km</option>
         </select>
         <button id="set-radius">Set Radius</button>
         <label for="min-rating">Select minimum rating:</label>
@@ -168,6 +169,7 @@
         var markers = [];  // Array to hold all markers
         var minRating = 0;
         var userLocation = {lat: 33.7488, lng: -84.3879};
+        var cuisineSearch = false;
 
         google.maps.event.addDomListener(window, 'load', initMap);
 
@@ -217,24 +219,29 @@
             });
 
             searchBox.addListener('places_changed', function() {
+                clearMarkers();
                 var places = searchBox.getPlaces();
                 if (places.length === 0) {
                     return;
                 }
                 var bounds = new google.maps.LatLngBounds();
                 places.forEach(function(place) {
-                    if (place.geometry && place.rating >= minRating) {
-                        /*
-                        new google.maps.Marker({
-                            map: map,
-                            title: place.name,
-                            position: place.geometry.location
-                        });*/
-                        createMarker(place, map);
-                        bounds.extend(place.geometry.location);
-                    } /*else if (place.geometry == true) {
-                        Should we put something here if the place exists but is below the minRating?
-                    }*/
+                    cuisineSearch = true;
+                        if (place.geometry && place.rating >= minRating) {
+                            const placeLocation = {
+                                lat: place.geometry.location.lat(), // Assuming place is a valid Google Maps place object
+                                lng: place.geometry.location.lng()
+                            };
+                            const distance = haversineDistance(userLocation, placeLocation) * 1000;
+                            console.log("Haversine Distance: " + distance);
+                            console.log("searchRadius = " + searchRadius);
+                            console.log("place name = " + place.name)
+                            if (distance < searchRadius) {
+                                console.log("creatingMarker");
+                                createMarker(place, map);
+                                bounds.extend(place.geometry.location);
+                            }
+                        }
                 });
                 map.fitBounds(bounds);
             });
@@ -252,8 +259,9 @@
                     var geocoder = new google.maps.Geocoder();
                     geocoder.geocode({'address': location}, function(results, status) {
                         if (status === google.maps.GeocoderStatus.OK) {
-                            map.setCenter(results[0].geometry.location);
-                            searchNearbyRestaurants(results[0].geometry.location);
+                            userLocation = results[0].geometry.location;
+                            map.setCenter(userLocation);
+                            searchNearbyRestaurants(userLocation);
                         } else {
                             alert('Location not found: ' + status);
                         }
@@ -263,9 +271,35 @@
 
             document.getElementById('set-rating').addEventListener('click', function() {
                 minRating = parseFloat(document.getElementById('min-rating').value);
-                //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 clearMarkers();
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+                if (cuisineSearch) {
+                    var places = searchBox.getPlaces();
+                    if (places.length === 0) {
+                        return;
+                    }
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function(place) {
+                        cuisineSearch = true;
+                        if (place.geometry && place.rating >= minRating) {
+                            const placeLocation = {
+                                lat: place.geometry.location.lat(), // Assuming place is a valid Google Maps place object
+                                lng: place.geometry.location.lng()
+                            };
+                            const distance = haversineDistance(userLocation, placeLocation) * 1000;
+                            console.log("Haversine Distance: " + distance);
+                            console.log("searchRadius = " + searchRadius);
+                            console.log("place name = " + place.name)
+                            if (distance < searchRadius) {
+                                console.log("creatingMarker");
+                                createMarker(place, map);
+                                bounds.extend(place.geometry.location);
+                            }
+                        }
+                    });
+                    map.fitBounds(bounds);
+                } else {
+                    searchNearbyRestaurants(userLocation); // Re-fetch restaurants with the new minimum rating
+                }
             });
 
 
@@ -274,25 +308,51 @@
                 searchRadius = parseInt(document.getElementById('radius').value);
                 //var userLocation = { lat: map.getCenter().lat(), lng: map.getCenter().lng() };
                 clearMarkers();
-                searchNearbyRestaurants(userLocation); // Re-fetch restaurants
+                if (cuisineSearch) {
+                    var places = searchBox.getPlaces();
+                    if (places.length === 0) {
+                        return;
+                    }
+                    var bounds = new google.maps.LatLngBounds();
+                    places.forEach(function(place) {
+                        cuisineSearch = true;
+                        if (place.geometry && place.rating >= minRating) {
+                            const placeLocation = {
+                                lat: place.geometry.location.lat(), // Assuming place is a valid Google Maps place object
+                                lng: place.geometry.location.lng()
+                            };
+                            const distance = haversineDistance(userLocation, placeLocation) * 1000;
+                            console.log("Haversine Distance: " + distance);
+                            console.log("searchRadius = " + searchRadius);
+                            console.log("place name = " + place.name)
+                            if (distance < searchRadius) {
+                                console.log("creatingMarker");
+                                createMarker(place, map);
+                                bounds.extend(place.geometry.location);
+                            }
+                        }
+                    });
+                    map.fitBounds(bounds);
+                } else {
+                    searchNearbyRestaurants(userLocation); // Re-fetch restaurants
+                }
             });
         }
 
         function searchNearbyRestaurants(location) {
             clearMarkers();
-
+            cuisineSearch = false;
             var request = {
                 location: location,
                 radius: searchRadius,  // Use the updated radius
                 type: ['restaurant']
             };
             service = new google.maps.places.PlacesService(map);
+            var cuisineService = "asf";
             service.nearbySearch(request, function(results, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
                     // Clear previous markers if needed (optional)
                     clearMarkers();
-
-                    //minRating = parseFloat(document.getElementById('min-rating').value);
 
                     results.forEach(function(place) {
                         if (place.rating >= minRating) {
@@ -360,8 +420,20 @@
                 });
             });
         }
-
-
+        // Function to check if any keywords from the set are in the array
+        function containsKeywords(arr, keywordSet) {
+            let count = 0;
+            console.log(keywordSet);
+            for (const word of arr) {
+                if (keywordSet.has(word)) {
+                    console.log(word);
+                    count++;
+                }
+            }
+            count = count / keywordSet.size;
+            console.log(count);
+            return count;
+        }
 
         function getPlaceDetails(placeId) {
             var request = {
@@ -371,9 +443,18 @@
 
             service.getDetails(request, function(place, status) {
                 if (status === google.maps.places.PlacesServiceStatus.OK) {
-                    place.place_id = placeId
+                    place.place_id = placeId;
                     displayPlaceDetails(place);
-                    infowindow.setContent(place.name);
+                    // Create a link to open the restaurant's location in Google Maps
+                    const googleMapsLink = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
+
+                    // Set the content of the InfoWindow
+                    infowindow.setContent(`
+                        <div>
+                            <strong>${place.name}</strong><br>
+                            <a href="${googleMapsLink}" target="_blank">View on Google Maps</a>
+                        </div>
+                    `);
                     infowindow.setPosition(place.geometry.location);
                     infowindow.open(map);
                 } else {
@@ -385,10 +466,211 @@
         function displayPlaceDetails(place, isUserLoggedIn, loginUrl) {
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
+            // Example usage
+            /*
+            var reviewed = service.getDetails({ placeId: placeId, fields: ['name', 'rating', 'reviews'] }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    displayReviews(place.reviews);
+                } else {
+                    document.getElementById('output').innerHTML = 'Error retrieving details.';
+                }
+            }); */
+            var review_text = "";
+            if (place.reviews && place.reviews.length > 0) {
+                  place.reviews.forEach((review, index) => {
+                      review_text += review.text;
+                  });
+                }
+            const arr_reviews = review_text.split(" ").map(word => word.toLowerCase());
+                        const italian = new Set([
+                "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "enoteca",
+                "taverna", "gusto", "sapori", "pomodoro", "nonna", "amici", "roma", "napoli", "toscana",
+                "vino", "dolce", "forno", "fresco", "bella", "buona", "vespa", "sole",
+                "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco",
+                "fiorentina", "tartufo", "panini", "spaghetti", "penne", "italy", "italian"
+                ]);
 
-            const cuisineType = place.types
-                ? place.types.filter(type => type !== 'restaurant').join(', ').replace(/_/g, ' ')
-                : 'N/A';
+            const mexican = new Set([
+                "taco", "burrito", "quesadilla", "enchilada", "guacamole", "salsa", "fajita", "tortilla", "nachos",
+                "chimichanga", "tamale", "chorizo", "carnitas", "carne", "asada", "pollo", "mole", "pozole",
+                "tostada", "sopes", "elote", "flan", "horchata", "pico", "gallo", "enchiladas",
+                "pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos",  "rancheros", "Moe's",
+                "refried", "frijoles", "arroz", "leches", "empanada", "churros", "taqueria",
+                "sopaipilla", "fresca", "sangria", "tequila", "mezcal", "chipotle", "poblano",
+                "chile relleno", "jalapeño", "habanero", "serrano", "carnitas", "birria", "pico",
+                "sopa", "ranchero", "adobo", "tinga", "salsa verde", "salsa roja", "chimichurri",
+                "nopal", "mexicana", "cochinita",  "pibil", "tajin", "flautas", "tostadas",
+                "queso", "crema", "baja", "molcajete", "tamales",
+                "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "mexican", "mexico", "latin"
+            ]);
+
+            const chinese = new Set([
+                "wok", "dragon", "lotus", "jade", "peking", "szechuan", "canton", "mandarin",
+                "hunan", "shanghai", "bamboo", "phoenix", "golden", "panda", "garden", "palace", "dynasty",
+                "emperor", "lucky", "fortune", "dumpling", "tea house", "sichuan", "chopsticks", "lantern", "china",
+                "beijing", "ming", "yuan", "tiger", "zen", "pearl",
+                "oriental", "pagoda","wonton", "soy", "buddha", "mein", "chinese", "bao",
+            ]);
+
+            const mediterranean = new Set([
+                "hummus", "falafel", "pita", "shawarma", "kebab", "gyro", "tzatziki", "tabbouleh", "ganoush",
+                "dolma", "souvlaki", "baklava", "spanakopita", "moussaka", "tahini", "feta", "olives", "shawarma", "bulgur", "couscous", "mezze", "halloumi", "fattoush", "za'atar",
+                "harissa", "sumac", "rice pilaf", "lebneh", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
+                "briam", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar", "taramasalata", "fava beans", "kalamata",
+                "pomegranate", "baklawa", "loukoumades", "orzo", "tarator", "lentil", "sardines", "figs", "turkish", "greek",
+                 "dukkah", "mediterranean"
+            ]);
+
+            const american = new Set([
+                "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse", "american",
+                "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "brewhouse", "cheeseburger",
+                "griddle", "brisket", "southern", "ribs", "buffalo", "american", "smoke", "patty", "cheddar",
+                "all-american", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
+                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "meatloaf", "milkshake", "roadside", "grub", "brewery"
+            ]);
+
+            const korean = new Set([
+                "bbq", "bulgogi", "kimchi", "korean", "bibimbap", "galbi", "samgyupsal", "jjigae", "tteokbokki", "kimbap", "ssam", "jajangmyeon", "dak", "sundubu", "manduu",
+                "gogi", "chimaek", "banchan", "ssam", "seoul", "gangnam", "soju", "kimchi stew", "hoddeok",
+                "yukgaejang", "gopchang", "jumak", "jeon", "kkakdugi", "pajeon", "budae", "jjigae",
+                "japchae", "hanjeongsik", "tteok", "kalbi", "makgeolli", "sikhye", "bingsu",
+                "chogajib", "chimaek", "doenjang", "bossam", "naengmyeon", "baekban", "karaage"
+            ]);
+
+            const bakeryKeywords = new Set([
+                "croissant", "danish", "pastry", "muffin", "cookie", "brownie",
+                "cupcake", "doughnut", "tart", "biscotti", "cake", "pudding", "eclair",
+                "scone", "macaron", "cheesecake", "baguette", "focaccia", "pita", "brioche",
+                "buttercream", "nutella", "caramel", "icing", "whipped", "sprinkles", "bakery", "treat"
+            ]);
+
+            const barKeywords = new Set([
+                "cocktail", "beer", "whiskey", "vodka", "gin", "rum", "tequila", "brandy",
+                "shots", "liquor", "mixology", "draft", "pint", "margarita", "mojito",
+                "martini", "highball", "lager", "ale", "stout", "IPA",
+                "happy hour", "drink", "fizzy", "craft", "brewery",
+                "distillery", "brewpub","bartender", "alcohol", "proof", "bar"
+            ]);
+            const brazilianRestaurantWords = new Set(["feijoada", "pão de queijo", "churrasco", "caipirinha", "brigadeiro", "farofa", "coxinha",
+                        "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "samba", "cachaça",
+                        "feira", "comida", "mineira", "quindim", "baião", "dois", "bolinho", "bacalhau", "misto", "quente", "pastel", "brazilian"]);
+
+            const breakfastRestaurant = new Set(["pancakes", "waffles", "eggs", "scrambled", "omelette", "bacon", "sausage", "toast", "bagel", "coffee",
+                "french toast", "biscuits", "gravy", "mimosa", "brunch", "granola", "cereal",
+                "smoothie", "eggs", "morning", "fluffy", "diner"]);
+            const coffeeShopIdentifierWords = new Set(["latte", "espresso", "cappuccino", "americano", "macchiato",
+                "cold brew", "mocha", "pour-over", "barista", "chai", "cortado", "nitro", "brewed", "roast", "decaf",
+                "frappuccino", "croissant", "muffin", "pastries", "grind", "brew", "starbucks", "coffee"]);
+            const frenchRestaurantIdentifierWords = new Set(["escargot", "croissant", "baguette",
+                "coq", "vin", "bouillabaisse", "ratatouille", "crepe", "foie", "gras", "confit", "tarte", "tatin", "brie",
+                "camembert", "chateaubriand", "moules", "frites", "quiche", "crème", "brûlée", "bordeaux",
+                "champagne", "provence", "fromage", "paté", "cassoulet", "rouille", "beurre blanc",
+                "french onion soup", "tarte", "soufflé", "macarons", "pain au chocolat"]);
+            const greekRestaurantIdentifierWords = new Set(["gyro", "tzatziki", "souvlaki", "moussaka",
+                "spanakopita", "dolmades", "baklava", "feta", "pita", "saganaki", "halloumi",
+                "hummus", "lamb", "ouzo", "tzatziki", "kalamata", "meze", "keftedes",
+                "avgolemono", "stifado", "greek", "pastitsio", "loukoumades", "orzo", "filo",
+                "phyllo", "metaxa"]);
+            const iceCreamShopIdentifierWords = new Set(["gelato", "sundae", "scoop", "waffle",
+                "milkshake", "sorbet", "froyo", "custard", "ice cream sandwich", "frozen",
+                "sprinkles", "fudge", "cones", "float", "flavor", "flavors", "dairy-free", "pop", "nutella",
+                "marshmallow", "caramel"]);
+            const indianRestaurantKeywords = new Set(["tikka", "masala", "indian", "india", "biryani",
+                "naan", "samosa", "paneer", "chutney", "vindaloo", "dal", "roti", "pulao", "thali", "chaat", "aloo",
+                "tandoori", "bhaji", "lassi", "tamarind",
+                "bhindi", "ghee", "chole", "basmati"
+            ]);
+            const japaneseRestaurantKeywords = new Set([
+                "sushi", "sashimi", "ramen", "tempura", "miso", "yakitori", "edamame", "nigiri", "wasabi",
+                "udon", "bento", "poke", "donburi", "katsu", "gyoza", "soba", "shoyu", "tamago", "maki", "matcha",
+                "narezushi", "chirashi", "tsukemono", "yaki", "ponzu", "dashi"
+            ]);
+
+            const thaiRestaurantKeywords = new Set([
+                "pad", "thai", "tom", "yum", "massaman", "satay", "sticky", "coconut", "lemongrass", "papaya",
+                "drunken", "tamarind", "kaffir", "sriracha", "stir-fry", "bamee",
+            ]);
+
+
+            var cuisineType;
+            var currentResults = 0;
+            cuisineType = "Restaurant";
+            if (containsKeywords(arr_reviews, italian) > currentResults){
+                currentResults = containsKeywords(arr_reviews, italian);
+                cuisineType = "Italian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, brazilianRestaurantWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, brazilianRestaurantWords);
+                cuisineType = "Brazilian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, breakfastRestaurant) > currentResults){
+                currentResults = containsKeywords(arr_reviews, breakfastRestaurant);
+                cuisineType = "Breakfast Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, coffeeShopIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, coffeeShopIdentifierWords);
+                cuisineType = "Coffe Shop";
+            }
+            if (containsKeywords(arr_reviews, frenchRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, frenchRestaurantIdentifierWords);
+                cuisineType = "French Restaurant";
+            }
+            if (containsKeywords(arr_reviews, greekRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, greekRestaurantIdentifierWords);
+                cuisineType = "Greek Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, chinese) > currentResults){
+                currentResults = containsKeywords(arr_reviews, chinese);
+                cuisineType = "Chinese Restaurant";
+            }
+            if (containsKeywords(arr_reviews, korean) > currentResults){
+                currentResults = containsKeywords(arr_reviews, korean);
+                cuisineType = "Korean Restaurant";
+            }
+            if (containsKeywords(arr_reviews, mexican) > currentResults){
+                currentResults = containsKeywords(arr_reviews, mexican);
+                cuisineType = "Mexican Restaurant"
+            }
+            if (containsKeywords(arr_reviews, bakeryKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, bakeryKeywords);
+                cuisineType = "Bakery"
+            }
+            if (containsKeywords(arr_reviews, iceCreamShopIdentifierWords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, iceCreamShopIdentifierWords);
+                cuisineType = "Ice Cream Shop"
+            }
+            if (containsKeywords(arr_reviews, mediterranean) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, mediterranean);
+                cuisineType = "Mediterranean Restaurant"
+            }
+            if (containsKeywords(arr_reviews, barKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, barKeywords);
+                cuisineType = "Bar"
+            }
+            if (containsKeywords(arr_reviews, indianRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, indianRestaurantKeywords);
+                cuisineType = "Indian Restaurant"
+            }
+            if (containsKeywords(arr_reviews, japaneseRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, japaneseRestaurantKeywords);
+                cuisineType = "Japanese Restaurant"
+            } /*
+            if (containsKeywords(arr_reviews, seafoodRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, seafoodRestaurantKeywords);
+                cuisineType = "Seafood Restaurant"
+            }*/
+            if (containsKeywords(arr_reviews, thaiRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, thaiRestaurantKeywords);
+                cuisineType = "Thai Restaurant"
+            }
 
             const maxReviewLength = 200; // Set your character limit here
             const reviews = place.reviews ? place.reviews.map((review, index) => {
@@ -652,29 +934,28 @@
             // Push the created marker into the markers array
             markers.push(marker);
 
-    // Event listener for when the marker is clicked
-          /*  This was the code from improveRebased...below is from anotherRestaurantDetails
-    google.maps.event.addListener(marker, 'click', function () {
-        // Use the PlacesService to get more details about the restaurant
-        var service = new google.maps.places.PlacesService(map);
-
-        service.getDetails({ placeId: place.place_id }, function (result, status) {
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-                // Call the displayPlaceDetails function to show the full details
-                console.log(result)
-                displayPlaceDetails(result);
-            } else {
-                console.error("Error fetching place details: " + status);
-            }
-        });
-    });
-}
-        // Favorites javascript
-    });*/
-
             google.maps.event.addListener(marker, 'click', function () {
                 getPlaceDetails(place.place_id); // Fetch details on click
             });
+        }
+
+        function toRad(value) {
+            return value * Math.PI / 180;
+        }
+
+        function haversineDistance(coord1, coord2) {
+            const R = 6371; // Radius of the Earth in kilometers
+
+            const dLat = toRad(coord2.lat - coord1.lat);
+            const dLng = toRad(coord2.lng - coord1.lng);
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(toRad(coord1.lat)) * Math.cos(toRad(coord2.lat)) *
+                      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; // Distance in kilometers
         }
 
         google.maps.event.addDomListener(window, 'load', initMap);
