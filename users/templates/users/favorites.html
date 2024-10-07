@@ -56,29 +56,439 @@
                             {% for favorite in favorites %}
                                 <li class="place-details-card">
                                     <h3>{{ favorite.restaurant.name }}</h3> <!-- Updated reference -->
-                                    <p><strong>Address:</strong> {{ favorite.restaurant.address }}</p> <!-- Updated reference -->
-                                    <p><strong>Rating:</strong> {{ favorite.rating }}</p>
-                                    <p><strong>Phone Number:</strong> {{ favorite.phone_number }}</p>
-                                    <p><strong>Website:</strong><a href="{{ favorite.website }}" target="_blank">Visit Website</a></p>
-                                    <button class="remove-button" data-place-id="{{ favorite.place_id }}">
-                                        <a href="{% url 'remove_favorite' favorite.pk %}">Remove</a>
-                                    </button>
+                                    <p><strong>⭐ Rating:</strong> {{ favorite.rating|default:"N/A" }}</p>
+                                    <p><strong>📞 Phone:</strong> {{ favorite.phone_number|default:"N/A" }}</p>
+                                    <p><strong>📍 Address:</strong> {{ favorite.address|default:"N/A" }}</p>
+                                    <p><strong>🔗 Website:</strong> <a href="{{ favorite.website }}" target="_blank">{{ favorite.website|default:"N/A" }}</a></p>
+                                    <p><strong>😋 Cuisine Type:</strong> {{ favorite.restaurant.cuisine_type|default:"N/A" }}</p>
 
+                                    <div class="reviews-card">
+                                        <h4>🔎 Reviews:</h4>
+                                        <div class="reviews">
+                                            {% if favorite.reviews %}
+                                                {% for review in favorite.reviews %}
+                                                    <div class="review">
+                                                        <p><strong>{{ review.author_name }}</strong></p>
+                                                        <p>{{ review.text }}</p>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                                <p>No reviews available</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <button class="remove-button" data-place-id="{{ favorite.place_id }}">
+                                        <a href="{% url 'remove_favorite' favorite.pk %}">Remove ❤️</a>
+                                    </button>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
                         <p style="text-align: center; font-weight: bold; font-size: 24px; color: #ffffff;">
                             No favorites yet. Go add some!
+                        </p>
                     {% endif %}
                 </div>
             {% else %}
-            <div style="font-size: 24px; font-weight: bold;">
-                You need to login or signup to use favorites!
-            </div>
+                <div style="font-size: 24px; font-weight: bold;">
+                    You need to login or signup to use favorites!
+                </div>
             {% endif %}
         </div>
     </div>
+ <!-- JavaScript for truncating reviews -->
+    <script>
+
+        function getPlace(placeId) {
+            return new Promise((resolve, reject) => {
+                var request = {
+                    placeId: placeId,
+                    fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
+                };
+
+                service.getDetails(request, function(place, status) {
+                    if (status === google.maps.places.PlacesServiceStatus.OK) {
+                        place.place_id = placeId;
+                        resolve(place); // Resolve the promise with the place
+                    } else {
+                        console.error('Place details request failed: ' + status);
+                        reject(status); // Reject the promise with the error status
+                    }
+                });
+            });
+        }
+        // Function to check if any keywords from the set are in the array
+        function containsKeywords(arr, keywordSet) {
+            let count = 0;
+            console.log(keywordSet);
+            for (const word of arr) {
+                if (keywordSet.has(word)) {
+                    console.log(word);
+                    count++;
+                }
+            }
+            count = count / keywordSet.size;
+            console.log(count);
+            return count;
+        }
+
+        function getPlaceDetails(placeId) {
+            var request = {
+                placeId: placeId,
+                fields: ['name', 'rating', 'formatted_phone_number', 'geometry', 'website', 'vicinity', 'formatted_address', 'types', 'reviews']
+            };
+
+            service.getDetails(request, function(place, status) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    place.place_id = placeId;
+                    displayPlaceDetails(place);
+                    // Create a link to open the restaurant's location in Google Maps
+                    const googleMapsLink = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
+
+                    // Set the content of the InfoWindow
+                    infowindow.setContent(`
+                        <div>
+                            <strong>${place.name}</strong><br>
+                            <a href="${googleMapsLink}" target="_blank">View on Google Maps</a>
+                        </div>
+                    `);
+                    infowindow.setPosition(place.geometry.location);
+                    infowindow.open(map);
+                } else {
+                    console.error('Place details request failed: ' + status);
+                }
+            });
+        }
+
+        function displayPlaceDetails(place) {
+            var detailsDiv = document.getElementById('place-details');
+            detailsDiv.innerHTML = '';  // Clear previous details
+            // Example usage
+            /*
+            var reviewed = service.getDetails({ placeId: placeId, fields: ['name', 'rating', 'reviews'] }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    displayReviews(place.reviews);
+                } else {
+                    document.getElementById('output').innerHTML = 'Error retrieving details.';
+                }
+            }); */
+            var review_text = "";
+            if (place.reviews && place.reviews.length > 0) {
+                  place.reviews.forEach((review, index) => {
+                      review_text += review.text;
+                  });
+                }
+            const arr_reviews = review_text.split(" ").map(word => word.toLowerCase());
+                        const italian = new Set([
+                "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "enoteca",
+                "taverna", "gusto", "sapori", "pomodoro", "nonna", "amici", "roma", "napoli", "toscana",
+                "vino", "dolce", "forno", "fresco", "bella", "buona", "vespa", "sole",
+                "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco",
+                "fiorentina", "tartufo", "panini", "spaghetti", "penne", "italy", "italian"
+                ]);
+
+            const mexican = new Set([
+                "taco", "burrito", "quesadilla", "enchilada", "guacamole", "salsa", "fajita", "tortilla", "nachos",
+                "chimichanga", "tamale", "chorizo", "carnitas", "carne", "asada", "pollo", "mole", "pozole",
+                "tostada", "sopes", "elote", "flan", "horchata", "pico", "gallo", "enchiladas",
+                "pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos",  "rancheros", "Moe's",
+                "refried", "frijoles", "arroz", "leches", "empanada", "churros", "taqueria",
+                "sopaipilla", "fresca", "sangria", "tequila", "mezcal", "chipotle", "poblano",
+                "chile relleno", "jalapeño", "habanero", "serrano", "carnitas", "birria", "pico",
+                "sopa", "ranchero", "adobo", "tinga", "salsa verde", "salsa roja", "chimichurri",
+                "nopal", "mexicana", "cochinita",  "pibil", "tajin", "flautas", "tostadas",
+                "queso", "crema", "baja", "molcajete", "tamales",
+                "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "mexican", "mexico", "latin"
+            ]);
+
+            const chinese = new Set([
+                "wok", "dragon", "lotus", "jade", "peking", "szechuan", "canton", "mandarin",
+                "hunan", "shanghai", "bamboo", "phoenix", "golden", "panda", "garden", "palace", "dynasty",
+                "emperor", "lucky", "fortune", "dumpling", "tea house", "sichuan", "chopsticks", "lantern", "china",
+                "beijing", "ming", "yuan", "tiger", "zen", "pearl",
+                "oriental", "pagoda","wonton", "soy", "buddha", "mein", "chinese", "bao",
+            ]);
+
+            const mediterranean = new Set([
+                "hummus", "falafel", "pita", "shawarma", "kebab", "gyro", "tzatziki", "tabbouleh", "ganoush",
+                "dolma", "souvlaki", "baklava", "spanakopita", "moussaka", "tahini", "feta", "olives", "shawarma", "bulgur", "couscous", "mezze", "halloumi", "fattoush", "za'atar",
+                "harissa", "sumac", "rice pilaf", "lebneh", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
+                "briam", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar", "taramasalata", "fava beans", "kalamata",
+                "pomegranate", "baklawa", "loukoumades", "orzo", "tarator", "lentil", "sardines", "figs", "turkish", "greek",
+                 "dukkah", "mediterranean"
+            ]);
+
+            const american = new Set([
+                "barbecue", "bbq", "diner", "burger", "steakhouse", "smokehouse", "roadhouse", "american",
+                "tavern", "saloon", "chophouse", "wings", "pit", "ranch", "brewhouse", "cheeseburger",
+                "griddle", "brisket", "southern", "ribs", "buffalo", "american", "smoke", "patty", "cheddar",
+                "all-american", "texas", "bacon", "chili", "fries", "skillet", "biscuits",
+                "comfort food", "apple pie", "country", "barn", "depot", "wagon", "meatloaf", "milkshake", "roadside", "grub", "brewery"
+            ]);
+
+            const korean = new Set([
+                "bbq", "bulgogi", "kimchi", "korean", "bibimbap", "galbi", "samgyupsal", "jjigae", "tteokbokki", "kimbap", "ssam", "jajangmyeon", "dak", "sundubu", "manduu",
+                "gogi", "chimaek", "banchan", "ssam", "seoul", "gangnam", "soju", "kimchi stew", "hoddeok",
+                "yukgaejang", "gopchang", "jumak", "jeon", "kkakdugi", "pajeon", "budae", "jjigae",
+                "japchae", "hanjeongsik", "tteok", "kalbi", "makgeolli", "sikhye", "bingsu",
+                "chogajib", "chimaek", "doenjang", "bossam", "naengmyeon", "baekban", "karaage"
+            ]);
+
+            const bakeryKeywords = new Set([
+                "croissant", "danish", "pastry", "muffin", "cookie", "brownie",
+                "cupcake", "doughnut", "tart", "biscotti", "cake", "pudding", "eclair",
+                "scone", "macaron", "cheesecake", "baguette", "focaccia", "pita", "brioche",
+                "buttercream", "nutella", "caramel", "icing", "whipped", "sprinkles", "bakery", "treat"
+            ]);
+
+            const barKeywords = new Set([
+                "cocktail", "beer", "whiskey", "vodka", "gin", "rum", "tequila", "brandy",
+                "shots", "liquor", "mixology", "draft", "pint", "margarita", "mojito",
+                "martini", "highball", "lager", "ale", "stout", "IPA",
+                "happy hour", "drink", "fizzy", "craft", "brewery",
+                "distillery", "brewpub","bartender", "alcohol", "proof", "bar"
+            ]);
+            const brazilianRestaurantWords = new Set(["feijoada", "pão de queijo", "churrasco", "caipirinha", "brigadeiro", "farofa", "coxinha",
+                        "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "samba", "cachaça",
+                        "feira", "comida", "mineira", "quindim", "baião", "dois", "bolinho", "bacalhau", "misto", "quente", "pastel", "brazilian"]);
+
+            const breakfastRestaurant = new Set(["pancakes", "waffles", "eggs", "scrambled", "omelette", "bacon", "sausage", "toast", "bagel", "coffee",
+                "french toast", "biscuits", "gravy", "mimosa", "brunch", "granola", "cereal",
+                "smoothie", "eggs", "morning", "fluffy", "diner"]);
+            const coffeeShopIdentifierWords = new Set(["latte", "espresso", "cappuccino", "americano", "macchiato",
+                "cold brew", "mocha", "pour-over", "barista", "chai", "cortado", "nitro", "brewed", "roast", "decaf",
+                "frappuccino", "croissant", "muffin", "pastries", "grind", "brew", "starbucks", "coffee"]);
+            const frenchRestaurantIdentifierWords = new Set(["escargot", "croissant", "baguette",
+                "coq", "vin", "bouillabaisse", "ratatouille", "crepe", "foie", "gras", "confit", "tarte", "tatin", "brie",
+                "camembert", "chateaubriand", "moules", "frites", "quiche", "crème", "brûlée", "bordeaux",
+                "champagne", "provence", "fromage", "paté", "cassoulet", "rouille", "beurre blanc",
+                "french onion soup", "tarte", "soufflé", "macarons", "pain au chocolat"]);
+            const greekRestaurantIdentifierWords = new Set(["gyro", "tzatziki", "souvlaki", "moussaka",
+                "spanakopita", "dolmades", "baklava", "feta", "pita", "saganaki", "halloumi",
+                "hummus", "lamb", "ouzo", "tzatziki", "kalamata", "meze", "keftedes",
+                "avgolemono", "stifado", "greek", "pastitsio", "loukoumades", "orzo", "filo",
+                "phyllo", "metaxa"]);
+            const iceCreamShopIdentifierWords = new Set(["gelato", "sundae", "scoop", "waffle",
+                "milkshake", "sorbet", "froyo", "custard", "ice cream sandwich", "frozen",
+                "sprinkles", "fudge", "cones", "float", "flavor", "flavors", "dairy-free", "pop", "nutella",
+                "marshmallow", "caramel"]);
+            const indianRestaurantKeywords = new Set(["tikka", "masala", "indian", "india", "biryani",
+                "naan", "samosa", "paneer", "chutney", "vindaloo", "dal", "roti", "pulao", "thali", "chaat", "aloo",
+                "tandoori", "bhaji", "lassi", "tamarind",
+                "bhindi", "ghee", "chole", "basmati"
+            ]);
+            const japaneseRestaurantKeywords = new Set([
+                "sushi", "sashimi", "ramen", "tempura", "miso", "yakitori", "edamame", "nigiri", "wasabi",
+                "udon", "bento", "poke", "donburi", "katsu", "gyoza", "soba", "shoyu", "tamago", "maki", "matcha",
+                "narezushi", "chirashi", "tsukemono", "yaki", "ponzu", "dashi"
+            ]);
+
+            const thaiRestaurantKeywords = new Set([
+                "pad", "thai", "tom", "yum", "massaman", "satay", "sticky", "coconut", "lemongrass", "papaya",
+                "drunken", "tamarind", "kaffir", "sriracha", "stir-fry", "bamee",
+            ]);
+
+
+            var cuisineType;
+            var currentResults = 0;
+            cuisineType = "Restaurant";
+            if (containsKeywords(arr_reviews, italian) > currentResults){
+                currentResults = containsKeywords(arr_reviews, italian);
+                cuisineType = "Italian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, brazilianRestaurantWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, brazilianRestaurantWords);
+                cuisineType = "Brazilian Restaurant";
+            }
+            if (containsKeywords(arr_reviews, breakfastRestaurant) > currentResults){
+                currentResults = containsKeywords(arr_reviews, breakfastRestaurant);
+                cuisineType = "Breakfast Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, coffeeShopIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, coffeeShopIdentifierWords);
+                cuisineType = "Coffe Shop";
+            }
+            if (containsKeywords(arr_reviews, frenchRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, frenchRestaurantIdentifierWords);
+                cuisineType = "French Restaurant";
+            }
+            if (containsKeywords(arr_reviews, greekRestaurantIdentifierWords) > currentResults){
+                currentResults = containsKeywords(arr_reviews, greekRestaurantIdentifierWords);
+                cuisineType = "Greek Restaurant";
+            }
+            if (containsKeywords(arr_reviews, american) > currentResults){
+                currentResults = containsKeywords(arr_reviews, american);
+                cuisineType = "American Restaurant";
+            }
+            if (containsKeywords(arr_reviews, chinese) > currentResults){
+                currentResults = containsKeywords(arr_reviews, chinese);
+                cuisineType = "Chinese Restaurant";
+            }
+            if (containsKeywords(arr_reviews, korean) > currentResults){
+                currentResults = containsKeywords(arr_reviews, korean);
+                cuisineType = "Korean Restaurant";
+            }
+            if (containsKeywords(arr_reviews, mexican) > currentResults){
+                currentResults = containsKeywords(arr_reviews, mexican);
+                cuisineType = "Mexican Restaurant"
+            }
+            if (containsKeywords(arr_reviews, bakeryKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, bakeryKeywords);
+                cuisineType = "Bakery"
+            }
+            if (containsKeywords(arr_reviews, iceCreamShopIdentifierWords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, iceCreamShopIdentifierWords);
+                cuisineType = "Ice Cream Shop"
+            }
+            if (containsKeywords(arr_reviews, mediterranean) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, mediterranean);
+                cuisineType = "Mediterranean Restaurant"
+            }
+            if (containsKeywords(arr_reviews, barKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, barKeywords);
+                cuisineType = "Bar"
+            }
+            if (containsKeywords(arr_reviews, indianRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, indianRestaurantKeywords);
+                cuisineType = "Indian Restaurant"
+            }
+            if (containsKeywords(arr_reviews, japaneseRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, japaneseRestaurantKeywords);
+                cuisineType = "Japanese Restaurant"
+            } /*
+            if (containsKeywords(arr_reviews, seafoodRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, seafoodRestaurantKeywords);
+                cuisineType = "Seafood Restaurant"
+            }*/
+            if (containsKeywords(arr_reviews, thaiRestaurantKeywords) > currentResults) {
+                currentResults = containsKeywords(arr_reviews, thaiRestaurantKeywords);
+                cuisineType = "Thai Restaurant"
+            }
+
+            const maxReviewLength = 200; // Set your character limit here
+            const reviews = place.reviews ? place.reviews.map((review, index) => {
+                let reviewText = review.text;
+                let isLongReview = reviewText.length > maxReviewLength;
+                let truncatedReview = isLongReview ? reviewText.substring(0, maxReviewLength) + '...' : reviewText;
+
+                return `
+                    <div class="review">
+                        <p><strong>${review.author_name}</strong></p>
+                        <p>Rating: ${generateStars(review.rating)} (${review.rating || 'N/A'} / 5 stars)</p>
+                        <p class="review-text">${truncatedReview}</p>
+                        ${isLongReview ? `<a href="#" class="see-more" data-index="${index}">See more</a>` : ''}
+                    </div>
+                    <div class="full-review" id="full-review-${index}" style="display: none;">
+                        <p>"${reviewText}"</p>
+                    </div>
+                `;
+            }).join('') : '<p>No reviews available</p>';
+
+            const ratingStars = generateStars(place.rating); // Get star representation
+
+            detailsDiv.innerHTML = `
+                <div class="place-details-container">
+                    <div class="place-details-card">
+                        <h3>${place.name}</h3>
+                        <p><strong>⭐ Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
+                        <p><strong>📞 Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
+                        <p><strong>📍 Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
+                        <p><strong>🔗 Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+                        <p><strong>😋 Cuisine Type:</strong> ${cuisineType}</p>
+                        <div class="heart-button-container">
+                            <p style="display: inline; margin-right: 10px; background: transparent"><strong>Add to Your Favorites:</strong></p>
+                            <button class="heart-button" id="${place.place_id}" data-place-id="${place.place_id}">
+                                🤍
+                            </button>
+                        </div>
+                    </div>
+                    <div class="reviews-card">
+                        <h4>Reviews:</h4>
+                        <div class="reviews">${reviews}</div>
+                    </div>
+                </div>
+            `;
+
+            // Add event listeners for "See more" links
+            const seeMoreLinks = detailsDiv.getElementsByClassName('see-more');
+            for (let link of seeMoreLinks) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    const index = this.getAttribute('data-index');
+                    const fullReviewDiv = document.getElementById(`full-review-${index}`);
+                    const reviewTextDiv = this.previousElementSibling; // The review text element
+
+                    // Toggle the full review and update the text accordingly
+                    if (fullReviewDiv.style.display === 'none') {
+                        fullReviewDiv.style.display = 'block'; // Show full review
+                        reviewTextDiv.style.display = 'none'; // Hide truncated text
+                        this.textContent = 'See less'; // Change link text
+                    } else {
+                        fullReviewDiv.style.display = 'none'; // Hide full review
+                        reviewTextDiv.style.display = 'block'; // Show truncated text
+                        this.textContent = 'See more'; // Reset link text
+                    }
+                });
+            }
+        }
+
+
+        // Function to generate star symbols based on the rating
+        function generateStars(rating) {
+            if (!rating) return ''; // Return empty if no rating
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < rating) {
+                    stars += '★'; // Full star
+                } else {
+                    stars += '☆'; // Empty star
+                }
+            }
+            return `<span class="stars">${stars}</span>`; // Wrap stars in a span with class
+        }
+
+        function createMarker(place, map) {
+            const marker = new google.maps.Marker({
+                position: place.geometry.location,
+                map: map,
+                title: place.name
+            });
+
+            // Push the created marker into the markers array
+            markers.push(marker);
+
+            google.maps.event.addListener(marker, 'click', function () {
+                getPlaceDetails(place.place_id); // Fetch details on click
+            });
+        }
+
+        function toRad(value) {
+            return value * Math.PI / 180;
+        }
+
+        function haversineDistance(coord1, coord2) {
+            const R = 6371; // Radius of the Earth in kilometers
+
+            const dLat = toRad(coord2.lat - coord1.lat);
+            const dLng = toRad(coord2.lng - coord1.lng);
+
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(toRad(coord1.lat)) * Math.cos(toRad(coord2.lat)) *
+                      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+            return R * c; // Distance in kilometers
+        }
+
+
+    </script>
+
 {% endblock %}
 </body>
 </html>

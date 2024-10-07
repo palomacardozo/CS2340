@@ -41,7 +41,7 @@ def login_view(request):
 def base(request):
     return render(request, 'users/base.html', {})
 
-def get_place_details(place_id):
+def get_place_details(place_id: object) -> object:
     gmaps = googlemaps.Client(key=settings.GOOGLE_API_KEY)
     place_details = gmaps.place(place_id=place_id)
     return place_details

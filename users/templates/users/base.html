@@ -691,11 +691,11 @@
                 <div class="place-details-container">
                     <div class="place-details-card">
                         <h3>${place.name}</h3>
-                        <p><strong>Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
-                        <p><strong>Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
-                        <p><strong>Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
-                        <p><strong>Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
-                        <p><strong>Cuisine Type:</strong> ${cuisineType}</p>
+                        <p><strong>⭐ Rating:</strong> ${ratingStars} (${place.rating || 'N/A'})</p>
+                        <p><strong>📞 Phone:</strong> ${place.formatted_phone_number || 'N/A'}</p>
+                        <p><strong>📍 Address:</strong> ${place.formatted_address || place.vicinity || 'N/A'}</p>
+                        <p><strong>🔗 Website:</strong> <a href="${place.website}" target="_blank">${place.website || 'N/A'}</a></p>
+                        <p><strong>😋 Cuisine Type:</strong> ${cuisineType}</p>
                         <div class="heart-button-container">
                             <p style="display: inline; margin-right: 10px; background: transparent"><strong>Add to Your Favorites:</strong></p>
                             <button class="heart-button" id="${place.place_id}" data-place-id="${place.place_id}">
@@ -782,6 +782,7 @@
             return R * c; // Distance in kilometers
         }
 
+        //Favorites code
         google.maps.event.addDomListener(window, 'load', initMap);
 
         // Log to verify the script is loaded
