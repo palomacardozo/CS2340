@@ -101,7 +101,7 @@
 
 <script type="text/javascript">
         const loginUrl = "{% url 'login' %}";
-        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" | safe }};
+        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" }};
     </script>
 
 {% for restaurant in places %}
@@ -463,7 +463,7 @@
             });
         }
 
-        function displayPlaceDetails(place, isUserLoggedIn, loginUrl) {
+        function displayPlaceDetails(place) {
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
             // Example usage
@@ -477,29 +477,29 @@
             }); */
             var review_text = "";
             if (place.reviews && place.reviews.length > 0) {
-                  place.reviews.forEach((review, index) => {
-                      review_text += review.text;
-                  });
-                }
+                place.reviews.forEach((review, index) => {
+                    review_text += review.text;
+                });
+            }
             const arr_reviews = review_text.split(" ").map(word => word.toLowerCase());
-                        const italian = new Set([
+            const italian = new Set([
                 "pasta", "pizza", "pizzeria", "cucina", "trattoria", "osteria", "ristorante", "enoteca",
                 "taverna", "gusto", "sapori", "pomodoro", "nonna", "amici", "roma", "napoli", "toscana",
                 "vino", "dolce", "forno", "fresco", "bella", "buona", "vespa", "sole",
                 "milano", "piazza", "gnocchi", "bottega", "sapori", "vittoria", "rosso", "bianco",
                 "fiorentina", "tartufo", "panini", "spaghetti", "penne", "italy", "italian"
-                ]);
+            ]);
 
             const mexican = new Set([
                 "taco", "burrito", "quesadilla", "enchilada", "guacamole", "salsa", "fajita", "tortilla", "nachos",
                 "chimichanga", "tamale", "chorizo", "carnitas", "carne", "asada", "pollo", "mole", "pozole",
                 "tostada", "sopes", "elote", "flan", "horchata", "pico", "gallo", "enchiladas",
-                "pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos",  "rancheros", "Moe's",
+                "pastor", "tinga", "barbacoa", "tapatio", "chalupa", "menudo", "huevos", "rancheros", "Moe's",
                 "refried", "frijoles", "arroz", "leches", "empanada", "churros", "taqueria",
                 "sopaipilla", "fresca", "sangria", "tequila", "mezcal", "chipotle", "poblano",
                 "chile relleno", "jalapeño", "habanero", "serrano", "carnitas", "birria", "pico",
                 "sopa", "ranchero", "adobo", "tinga", "salsa verde", "salsa roja", "chimichurri",
-                "nopal", "mexicana", "cochinita",  "pibil", "tajin", "flautas", "tostadas",
+                "nopal", "mexicana", "cochinita", "pibil", "tajin", "flautas", "tostadas",
                 "queso", "crema", "baja", "molcajete", "tamales",
                 "campechano", "aguachile", "chapulines", "puerco", "cilantro", "lime", "mexican", "mexico", "latin"
             ]);
@@ -509,7 +509,7 @@
                 "hunan", "shanghai", "bamboo", "phoenix", "golden", "panda", "garden", "palace", "dynasty",
                 "emperor", "lucky", "fortune", "dumpling", "tea house", "sichuan", "chopsticks", "lantern", "china",
                 "beijing", "ming", "yuan", "tiger", "zen", "pearl",
-                "oriental", "pagoda","wonton", "soy", "buddha", "mein", "chinese", "bao",
+                "oriental", "pagoda", "wonton", "soy", "buddha", "mein", "chinese", "bao",
             ]);
 
             const mediterranean = new Set([
@@ -518,7 +518,7 @@
                 "harissa", "sumac", "rice pilaf", "lebneh", "kofta", "manakish", "borek", "shakshuka", "kibbeh", "saganaki",
                 "briam", "fasolia", "freekeh", "labneh", "mujaddara", "pastitsio", "zaatar", "taramasalata", "fava beans", "kalamata",
                 "pomegranate", "baklawa", "loukoumades", "orzo", "tarator", "lentil", "sardines", "figs", "turkish", "greek",
-                 "dukkah", "mediterranean"
+                "dukkah", "mediterranean"
             ]);
 
             const american = new Set([
@@ -549,11 +549,11 @@
                 "shots", "liquor", "mixology", "draft", "pint", "margarita", "mojito",
                 "martini", "highball", "lager", "ale", "stout", "IPA",
                 "happy hour", "drink", "fizzy", "craft", "brewery",
-                "distillery", "brewpub","bartender", "alcohol", "proof", "bar"
+                "distillery", "brewpub", "bartender", "alcohol", "proof", "bar"
             ]);
             const brazilianRestaurantWords = new Set(["feijoada", "pão de queijo", "churrasco", "caipirinha", "brigadeiro", "farofa", "coxinha",
-                        "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "samba", "cachaça",
-                        "feira", "comida", "mineira", "quindim", "baião", "dois", "bolinho", "bacalhau", "misto", "quente", "pastel", "brazilian"]);
+                "acarajé", "moqueca", "vatapá", "açai", "acai", "guaraná", "rodízio", "tapioca", "picanha", "samba", "cachaça",
+                "feira", "comida", "mineira", "quindim", "baião", "dois", "bolinho", "bacalhau", "misto", "quente", "pastel", "brazilian"]);
 
             const breakfastRestaurant = new Set(["pancakes", "waffles", "eggs", "scrambled", "omelette", "bacon", "sausage", "toast", "bagel", "coffee",
                 "french toast", "biscuits", "gravy", "mimosa", "brunch", "granola", "cereal",
@@ -595,47 +595,47 @@
             var cuisineType;
             var currentResults = 0;
             cuisineType = "Restaurant";
-            if (containsKeywords(arr_reviews, italian) > currentResults){
+            if (containsKeywords(arr_reviews, italian) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, italian);
                 cuisineType = "Italian Restaurant";
             }
-            if (containsKeywords(arr_reviews, brazilianRestaurantWords) > currentResults){
+            if (containsKeywords(arr_reviews, brazilianRestaurantWords) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, brazilianRestaurantWords);
                 cuisineType = "Brazilian Restaurant";
             }
-            if (containsKeywords(arr_reviews, breakfastRestaurant) > currentResults){
+            if (containsKeywords(arr_reviews, breakfastRestaurant) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, breakfastRestaurant);
                 cuisineType = "Breakfast Restaurant";
             }
-            if (containsKeywords(arr_reviews, american) > currentResults){
+            if (containsKeywords(arr_reviews, american) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, american);
                 cuisineType = "American Restaurant";
             }
-            if (containsKeywords(arr_reviews, coffeeShopIdentifierWords) > currentResults){
+            if (containsKeywords(arr_reviews, coffeeShopIdentifierWords) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, coffeeShopIdentifierWords);
                 cuisineType = "Coffe Shop";
             }
-            if (containsKeywords(arr_reviews, frenchRestaurantIdentifierWords) > currentResults){
+            if (containsKeywords(arr_reviews, frenchRestaurantIdentifierWords) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, frenchRestaurantIdentifierWords);
                 cuisineType = "French Restaurant";
             }
-            if (containsKeywords(arr_reviews, greekRestaurantIdentifierWords) > currentResults){
+            if (containsKeywords(arr_reviews, greekRestaurantIdentifierWords) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, greekRestaurantIdentifierWords);
                 cuisineType = "Greek Restaurant";
             }
-            if (containsKeywords(arr_reviews, american) > currentResults){
+            if (containsKeywords(arr_reviews, american) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, american);
                 cuisineType = "American Restaurant";
             }
-            if (containsKeywords(arr_reviews, chinese) > currentResults){
+            if (containsKeywords(arr_reviews, chinese) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, chinese);
                 cuisineType = "Chinese Restaurant";
             }
-            if (containsKeywords(arr_reviews, korean) > currentResults){
+            if (containsKeywords(arr_reviews, korean) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, korean);
                 cuisineType = "Korean Restaurant";
             }
-            if (containsKeywords(arr_reviews, mexican) > currentResults){
+            if (containsKeywords(arr_reviews, mexican) > currentResults) {
                 currentResults = containsKeywords(arr_reviews, mexican);
                 cuisineType = "Mexican Restaurant"
             }
@@ -734,6 +734,7 @@
                     </div>
                 </div>
             `;
+        }
 
             function submitReview(event, restaurantId, isUserLoggedIn, loginUrl) {
                 event.preventDefault();
@@ -846,7 +847,6 @@
                         this.textContent = 'See more'; // Reset link text
                     }
                 });
-            }
         }
 
 
@@ -1036,23 +1036,6 @@
 
     </script>
 
-    <script type="text/javascript">
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Check if this cookie string begins with the name we want
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-    </script>
 
 
 
