@@ -95,7 +95,6 @@ def add_to_favorites(request, place_id):
             address=place['result']['formatted_address'],
             rating=place['result'].get('rating', None),  # Get rating from place details
             phone_number=place['result'].get('formatted_phone_number', None),  # Get phone number
-            cuisine_type=', '.join(place['result'].get('types', [])),  # Join types as a string for cuisine
             website=place['result'].get('website', None),
         )
         if not favorite_created or not is_favorited:
@@ -113,13 +112,4 @@ def add_to_favorites(request, place_id):
 def remove_favorite(request, pk):
     Favorite.objects.get(pk=pk).delete()
     return redirect('/favorites')
-def contains_keywords(arr, keyword_set):
-    count = 0
-    print(keyword_set)
-    for word in arr:
-        if word in keyword_set:
-            print(word)
-            count += 1
-    count = count / len(keyword_set)
-    print(count)
-    return count
+
