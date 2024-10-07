@@ -11,6 +11,10 @@ from django.conf import settings
 import json
 from django.contrib.auth import get_user_model
 from users.models import Favorite
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from .models import Review
 
 def signup(request):
     if request.method == 'POST':
@@ -113,3 +117,66 @@ def add_to_favorites(request, place_id):
 def remove_favorite(request, pk):
     Favorite.objects.get(pk=pk).delete()
     return redirect('/favorites')
+
+@login_required(login_url='/login/')
+def submit_review(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            place_id = data.get('restaurant')
+            rating = data.get('rating')
+            review_text = data.get('review')
+
+            print(f"Received data: {data}")  # Log received data for debugging
+
+            place = get_place_details(place_id)
+            # Check if the location already exists in the Locations model
+            location, location_created = Locations.objects.get_or_create(
+                place_id=place_id,
+                defaults={
+                    'name': place['result']['name'],
+                    'address': place['result']['formatted_address'],
+                    'lat': place['result']['geometry']['location']['lat'],
+                    'lng': place['result']['geometry']['location']['lng'],
+                }
+            )
+
+            # Check if the user has already submitted a review for this restaurant
+            existing_review = Review.objects.filter(user=request.user, place_id=place_id).first()
+
+            if existing_review:
+                # Update the existing review
+                existing_review.rating = rating
+                existing_review.review_text = review_text
+                existing_review.save()
+                message = 'Review updated successfully!'
+            else:
+                # Create a new review
+                new_review = Review(
+                    user=request.user,
+                    place_id=place_id,
+                    rating=rating,
+                    review_text=review_text,
+                    restaurant=location,
+                )
+                new_review.save()
+                message = 'Review submitted successfully!'
+
+            return JsonResponse({'message': message}, status=201)
+        except Exception as e:
+            print(f"Error while submitting review: {e}")  # Log the error for debugging
+            return JsonResponse({'error': str(e)}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
+
+
+@login_required
+def my_reviews(request):
+    user_reviews = Review.objects.filter(user=request.user)  # Fetch reviews created by the logged-in user
+    return render(request, 'users/my_reviews.html', {'reviews': user_reviews})
+
+@login_required(login_url='/login/')
+def remove_review(request, pk):
+    review = get_object_or_404(Review, pk=pk)
+    review.delete()
+    return redirect('/my_reviews')

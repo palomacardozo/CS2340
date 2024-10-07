@@ -99,6 +99,11 @@
 </head>
 <body>
 
+<script type="text/javascript">
+        const loginUrl = "{% url 'login' %}";
+        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" }};
+    </script>
+
 {% for restaurant in places %}
     <p>Restaurant: {{ restaurant.name }} - Place ID: {{ restaurant.place_id }}</p> <!-- Log place_id -->
     <button class="heart-button" data-place-id="{{ restaurant.place_id }}" id="{{ restaurant.place_id }}">
@@ -111,6 +116,7 @@
         <a href="{% url 'home' %}">Home</a>
         <a href="{% url 'favorites' %}">Favorites</a>
         {% if user.is_authenticated %}
+        <a href="{% url 'my_reviews' %}">My Reviews</a>
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="nav-link logout-button">Logout</button>
@@ -457,7 +463,7 @@
             });
         }
 
-        function displayPlaceDetails(place) {
+        function displayPlaceDetails(place, isUserLoggedIn, loginUrl) {
             var detailsDiv = document.getElementById('place-details');
             detailsDiv.innerHTML = '';  // Clear previous details
             // Example usage
@@ -706,9 +712,119 @@
                     <div class="reviews-card">
                         <h4>Reviews:</h4>
                         <div class="reviews">${reviews}</div>
+
+                        <!-- Review Submission Card -->
+                        <div class="review-submission-card">
+                            <h4>Submit a Review:</h4>
+                            <form id="review-form-${place.place_id}" onsubmit="submitReview(event, '${place.place_id}', isUserLoggedIn, loginUrl)">
+                                <label for="rating">Rating:</label>
+                                <select id="rating" name="rating" required>
+                                    <option value="" disabled selected>Select a rating</option>
+                                    <option value="1">1 Star</option>
+                                    <option value="2">2 Stars</option>
+                                    <option value="3">3 Stars</option>
+                                    <option value="4">4 Stars</option>
+                                    <option value="5">5 Stars</option>
+                                </select>
+                                <label for="review-text">Review:</label>
+                                <textarea id="review-text" name="review-text" rows="4" required></textarea>
+                                <button type="submit">Submit Review</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             `;
+
+            function submitReview(event, restaurantId, isUserLoggedIn, loginUrl) {
+            event.preventDefault();
+
+            if (!isUserLoggedIn) {
+                // Redirect to login page if user is not logged in
+                window.location.href = loginUrl;
+                return;
+            }
+
+            // If user is logged in, proceed with review submission
+            const rating = document.querySelector(`#review-form-${restaurantId} #rating`).value;
+            const reviewText = document.querySelector(`#review-form-${restaurantId} #review-text`).value;
+
+            if (rating && reviewText) {
+                // Prepare data to be sent to the server
+                const data = {
+                    restaurant: restaurantId,
+                    rating: rating,
+                    review: reviewText,
+                };
+
+                console.log('Sending data:', JSON.stringify(data));
+
+                // Send the review data to the server via AJAX
+                fetch('/submit_review/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token for security
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    alert(data.message);
+
+                    // Try to find the review list
+                    const reviewList = document.querySelector('.review-list');
+                    if (!reviewList) {
+                        console.error('Review list not found!');
+                        return; // Exit if the review list doesn't exist
+                    }
+
+                    // Create a new review card
+                    const reviewCard = document.createElement('li');
+                    reviewCard.className = 'review-card';
+                    reviewCard.innerHTML = `
+                        <h3>${data.restaurantName}</h3>
+                        <p><strong>Rating:</strong> ${data.rating} / 5</p>
+                        <p><strong>Review:</strong> ${data.reviewText}</p>
+                        <a href="#" onclick="removeReview(${data.reviewId}); return false;">Remove Review</a>
+                    `;
+
+                    // Append the new review card to the review list
+                    reviewList.appendChild(reviewCard);
+
+                    // Clear the form after successful submission
+                    document.querySelector(`#review-form-${restaurantId}`).reset();
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    alert('An error occurred while submitting your review. Please try again.');
+                });
+            } else {
+                alert('Please provide a rating and a review before submitting.');
+            }
+        }
+
+
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
 
             // Add event listeners for "See more" links
             const seeMoreLinks = detailsDiv.getElementsByClassName('see-more');

@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.models import AbstractUser, Group, Permission, User
 from django.db import models
 from AtlantaFoodFinder.models import Locations
 from django.contrib.auth import get_user_model
@@ -31,3 +31,13 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.restaurant.name}"
+
+class Review(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    place_id = models.CharField(max_length=255, default="Unknown Place ID")
+    rating = models.FloatField(null=True, blank=True)
+    review_text = models.TextField()
+    restaurant = models.ForeignKey(Locations, on_delete=models.CASCADE, null=True, blank=True)  # Make it nullable
+
+    def __str__(self):
+        return f"{self.user.username} - {self.restaurant.name if self.restaurant else 'No Restaurant'}"
