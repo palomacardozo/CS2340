@@ -101,7 +101,7 @@
 
 <script type="text/javascript">
         const loginUrl = "{% url 'login' %}";
-        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" }};
+        const isUserLoggedIn = {{ user.is_authenticated|yesno:"true,false" | safe }};
     </script>
 
 {% for restaurant in places %}
@@ -736,95 +736,95 @@
             `;
 
             function submitReview(event, restaurantId, isUserLoggedIn, loginUrl) {
-            event.preventDefault();
+                event.preventDefault();
 
-            if (!isUserLoggedIn) {
-                // Redirect to login page if user is not logged in
-                window.location.href = loginUrl;
-                return;
-            }
+                if (!isUserLoggedIn) {
+                    // Redirect to login page if user is not logged in
+                    window.location.href = loginUrl;
+                    return;
+                }
 
-            // If user is logged in, proceed with review submission
-            const rating = document.querySelector(`#review-form-${restaurantId} #rating`).value;
-            const reviewText = document.querySelector(`#review-form-${restaurantId} #review-text`).value;
+                // If user is logged in, proceed with review submission
+                const rating = document.querySelector(`#review-form-${restaurantId} #rating`).value;
+                const reviewText = document.querySelector(`#review-form-${restaurantId} #review-text`).value;
 
-            if (rating && reviewText) {
-                // Prepare data to be sent to the server
-                const data = {
-                    restaurant: restaurantId,
-                    rating: rating,
-                    review: reviewText,
-                };
+                if (rating && reviewText) {
+                    // Prepare data to be sent to the server
+                    const data = {
+                        restaurant: restaurantId,
+                        rating: rating,
+                        review: reviewText,
+                    };
 
-                console.log('Sending data:', JSON.stringify(data));
+                    console.log('Sending data:', JSON.stringify(data));
 
-                // Send the review data to the server via AJAX
-                fetch('/submit_review/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token for security
-                    },
-                    body: JSON.stringify(data),
-                })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('Network response was not ok.');
-                })
-                .then(data => {
-                    alert(data.message);
+                    // Send the review data to the server via AJAX
+                    fetch('/submit_review/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken'), // Include CSRF token for security
+                        },
+                        body: JSON.stringify(data),
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            return response.json();
+                        }
+                        throw new Error('Network response was not ok.');
+                    })
+                    .then(data => {
+                        alert(data.message);
 
-                    // Try to find the review list
-                    const reviewList = document.querySelector('.review-list');
-                    if (!reviewList) {
-                        console.error('Review list not found!');
-                        return; // Exit if the review list doesn't exist
-                    }
+                        // Try to find the review list
+                        const reviewList = document.querySelector('.review-list');
+                        if (!reviewList) {
+                            console.error('Review list not found!');
+                            return; // Exit if the review list doesn't exist
+                        }
 
-                    // Create a new review card
-                    const reviewCard = document.createElement('li');
-                    reviewCard.className = 'review-card';
-                    reviewCard.innerHTML = `
-                        <h3>${data.restaurantName}</h3>
-                        <p><strong>Rating:</strong> ${data.rating} / 5</p>
-                        <p><strong>Review:</strong> ${data.reviewText}</p>
-                        <a href="#" onclick="removeReview(${data.reviewId}); return false;">Remove Review</a>
-                    `;
+                        // Create a new review card
+                        const reviewCard = document.createElement('li');
+                        reviewCard.className = 'review-card';
+                        reviewCard.innerHTML = `
+                            <h3>${data.restaurantName}</h3>
+                            <p><strong>Rating:</strong> ${data.rating} / 5</p>
+                            <p><strong>Review:</strong> ${data.reviewText}</p>
+                            <a href="#" onclick="removeReview(${data.reviewId}); return false;">Remove Review</a>
+                        `;
 
-                    // Append the new review card to the review list
-                    reviewList.appendChild(reviewCard);
+                        // Append the new review card to the review list
+                        reviewList.appendChild(reviewCard);
 
-                    // Clear the form after successful submission
-                    document.querySelector(`#review-form-${restaurantId}`).reset();
-                })
-                .catch(error => {
-                    console.error('There was a problem with the fetch operation:', error);
-                    alert('An error occurred while submitting your review. Please try again.');
-                });
-            } else {
-                alert('Please provide a rating and a review before submitting.');
-            }
-        }
-
-
-
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    // Check if this cookie string begins with the name we want
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+                        // Clear the form after successful submission
+                        document.querySelector(`#review-form-${restaurantId}`).reset();
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                        alert('An error occurred while submitting your review. Please try again.');
+                    });
+                } else {
+                    alert('Please provide a rating and a review before submitting.');
                 }
             }
-            return cookieValue;
-        }
+
+
+
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Check if this cookie string begins with the name we want
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
 
             // Add event listeners for "See more" links
             const seeMoreLinks = detailsDiv.getElementsByClassName('see-more');
@@ -1032,7 +1032,30 @@
                 return cookieValue;
             }
         });
-    </Script>
+
+
+    </script>
+
+    <script type="text/javascript">
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    // Check if this cookie string begins with the name we want
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+
+
+
 
 </body>
 </html>
